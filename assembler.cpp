@@ -168,12 +168,21 @@ std::string TrimInput(const std::string &input) {
 
 //*************************************************************************************************
 std::string Token(const std::string &input, std::string &token) {
+    if (input.empty()) {
+        token = "";
+        return input;
+    }
     // returns the first token
     const std::string delim {", \t"};
     std::string::size_type end = input.find_first_of(delim);
     // substring 2nd arg is length.   It will take all chars to end if npos.
     token = input.substr(0, end); 
-    return input.substr(end);
+    std::string s = input.substr(end);
+    printf ("%s trim '%s'\n", __func__, s.c_str());
+    // Now remove the extra white space
+    std::string::size_type start = s.find_first_not_of(delim);
+    printf ("%s returns '%s'\n", __func__, s.substr(start).c_str());
+    return s.substr(start);
 }
 
 //*************************************************************************************************
@@ -204,7 +213,24 @@ bool ParseOperation(const std::string &line, Operation &operation) {
    operation.label = label;
    // Now we have the table entry
    // Parse the REGISTERS, VALUES, LABELS
+   if (opcodeRule.reg1 == REQUIRED) {
+      s = Token(s, firstToken);
+      std::cout << "... REG1 " << firstToken << std::endl;
+   } else if (opcodeRule.reg2 == REQUIRED) {
+      s = Token(s, firstToken);
+      std::cout << "... REG2 " << firstToken << std::endl;      
+   } else if (opcodeRule.value == REQUIRED) {
+      s = Token(s, firstToken);
+      std::cout << "... VALUE " << firstToken << std::endl;      
+   } else if (opcodeRule.label == HAS_LABEL) {
+      if (!label.empty()) {
+        std::cout << "JUMPING TO A JMP NOT PERMITTED" << std::endl;
+        return false;
+      }
+      s = Token(s, firstToken);
+      std::cout << "... LABEL " << firstToken << std::endl;            
 
+   }
    std::cout<< "Processing... ["<< operation.opCode << "]" << std::endl;
    return true;
 }
