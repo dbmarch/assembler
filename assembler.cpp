@@ -10,13 +10,54 @@ arraytomif()    Print binary machine code array to mif file.
 This represents the flow the program should go through
 */
 
-
 #include <iostream>
 #include <fstream>
-#include <sstream>
 #include <string>
 #include <vector>
 
+// TYPE DECLARATIONS
+
+using Operation = struct{
+    std::string opCode;
+    uint8_t code;
+    bool extraLong;
+    int reg1;
+    int reg2;
+    int value;
+    std::string label;  // Assume that you can't jump to a jump ( only 1 label )
+};
+
+// Fields filled in with REQUIRED/NONE:
+const int REQUIRED{-1};
+const int NONE{-2};
+const std::string HAS_LABEL{"LABEL"};
+const std::string NO_LABEL{""};
+
+using Program = std::vector<Operation>;
+
+// Array of strings containing all the Op Codes in their respective order. IN and OUT will become VADD and VSUB later.
+// std::string Ops[16] = {"LD", "ST", "CPY", "SWAP", "JMP", "ADD", "SUB", "ADDC", "SUBC", "NOT", "AND", "OR", "SRA", "RRC", "IN", "OUT"};
+const Program OPCODE_LIST = {
+    // Opcode       code    // ExtraLong     R1          R2            Value   Label
+    { "LD",         0x00,   true,           REQUIRED,   REQUIRED,   REQUIRED,  NO_LABEL  },
+    { "ST",         0x01,   true,           REQUIRED,   REQUIRED,   REQUIRED,  NO_LABEL  },
+    { "CPY",        0x02,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
+    { "SWAP",       0x03,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
+    { "JMP",        0x04,   true,           REQUIRED,   REQUIRED,   REQUIRED,  HAS_LABEL },
+    { "ADD",        0x05,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
+    { "SUB",        0x06,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
+    { "ADDC",       0x07,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
+    { "SUBC",       0x08,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
+    { "NOT",        0x09,   false,          REQUIRED,   NONE,       NONE,      NO_LABEL  },
+    { "AND",        0x0A,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
+    { "OR",         0x0B,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
+    { "SRA",        0x0C,   false,          REQUIRED,   NONE,       REQUIRED,  NO_LABEL  },
+    { "RRC",        0x0D,   false,          REQUIRED,   NONE,       REQUIRED,  NO_LABEL  }
+    // { "IN",         0x0E,   false,          REQUIRED,   REQUIRED,   REQUIRED,  NO_LABEL  },
+    // { "OUT",        0x0F,   false,          REQUIRED,   REQUIRED,   REQUIRED,  NO_LABEL  },
+};
+
+// FUNCTION DECLARATIONS
 
 // Parse the file
 using FileVector = std::vector<std::string>;
@@ -25,21 +66,52 @@ FileVector ParseFile (std::string &fileName);
 // Trim the input line 
 std::string TrimInput(const std::string &input);
 
-// Array of strings containing all the Op Codes in their respective order. IN and OUT will become VADD and VSUB later.
-std::string Ops[16] = {"LD", "ST", "CPY", "SWAP", "JMP", "ADD", "SUB", "ADDC", "SUBC", "NOT", "AND", "OR", "SRA", "RRC", "IN", "OUT"};
+// Parses line input.
+// Token is filled in with the first token.
+// Returned string is the remaining string after the token (minus whitespace) or empty string
+std::string Token(const std::string &input, std::string &token);
+
+// Parse a line for an operation
+bool ParseOperation(const std::string &input, Operation &operation);
+
+// From our program generate the assembly.
+// Return true if we generate the file.
+bool GenerateAssembly (const Program &program);
+
+// Search our OPCODE Table for token.  If we find it, opcodeRule points the the row in the table and we return true.
+// Otherwise return false
+bool LookupOperation (const std::string &token, Operation &opcodeRule);
+
 // Load , Store, Jump are doubles
 
 //*************************************************************************************************
 int main(int argc, char** argv) {
-
+    bool success{true};
     std::string fileName{"dxp_dcs.txt"};
     FileVector fileVector = ParseFile(fileName);
 
+    Program program;
     for ( const auto line : fileVector) {
-        std::cout << "!" << line  << "*" << std::endl;
+        std::cout << "PARSE '" << line  << "'" << std::endl;
+       Operation operation{};
+       if (ParseOperation(line, operation)) {
+           program.push_back(operation);
+       } else {
+           std::cout << "SYNTAX ERROR: '" << line << "'" << std::endl;
+           success = false;
+       }
     }
 
-    return 0;
+    if (success) {
+        std::cout << "Processing Complete...Generating Assembly" << std::endl;
+        success = GenerateAssembly(program);
+
+        if (!success) {
+            std::cout << "FAILED TO GENERATE ASSEMBLY" << std::endl;
+        }
+    }
+
+    return success ? 0 : -1;
 }
 
 
@@ -93,3 +165,66 @@ std::string TrimInput(const std::string &input) {
     std::string trimString = input.substr(start, end == std::string::npos ? end : end-start); 
     return trimString;
 }
+
+//*************************************************************************************************
+std::string Token(const std::string &input, std::string &token) {
+    // returns the first token
+    const std::string delim {", \t"};
+    std::string::size_type end = input.find_first_of(delim);
+    // substring 2nd arg is length.   It will take all chars to end if npos.
+    token = input.substr(0, end); 
+    return input.substr(end);
+}
+
+//*************************************************************************************************
+bool ParseOperation(const std::string &line, Operation &operation) {
+   std::string firstToken;  // First token on the line.  Either an opcode or a label
+   std::string s = Token(line, firstToken);
+   if (firstToken.empty()) {
+      std::cout << "ParseOperation Failed empty opcode" << std::endl;
+      return false; // Syntax Error
+   }
+   
+   std::string label;
+   Operation opcodeRule;
+   if (LookupOperation(firstToken, opcodeRule)) {
+       std::cout << "...Table Entry Found" << std::endl;
+
+   } else {
+       std::cout << "...label found '" << firstToken << "'" << std::endl;
+       label = firstToken;
+       if (LookupOperation(firstToken, opcodeRule)) {
+          std::cout << "...Table Entry Found" << std::endl;
+       } else {
+          std::cout << "ERROR FINDING OPCODE TABLE ENTRY FOR: " << firstToken << std::endl;
+          return false;
+       }
+   }
+   operation = opcodeRule;
+   operation.label = label;
+   // Now we have the table entry
+   // Parse the REGISTERS, VALUES, LABELS
+
+   std::cout<< "Processing... ["<< operation.opCode << "]" << std::endl;
+   return true;
+}
+
+
+//*************************************************************************************************
+bool GenerateAssembly (const Program &program) {
+    std::cout << "Generating assembly..." << std::endl;
+    return false;
+}
+
+//*************************************************************************************************
+bool LookupOperation (const std::string &token, Operation &opcodeRule) {
+    // Now search our list to see if we find our token 
+    for (const auto &op : OPCODE_LIST) {
+        if (token == op.opCode) {
+            opcodeRule = op;
+            return true;
+        }
+    }
+    return false;
+}
+
