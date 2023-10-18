@@ -18,10 +18,12 @@ This represents the flow the program should go through
 #include <vector>
 
 
+// Parse the file
 using FileVector = std::vector<std::string>;
-
 FileVector ParseFile (std::string &fileName);
 
+// Trim the input line 
+std::string TrimInput(const std::string &input);
 
 // Array of strings containing all the Op Codes in their respective order. IN and OUT will become VADD and VSUB later.
 std::string Ops[16] = {"LD", "ST", "CPY", "SWAP", "JMP", "ADD", "SUB", "ADDC", "SUBC", "NOT", "AND", "OR", "SRA", "RRC", "IN", "OUT"};
@@ -52,7 +54,6 @@ FileVector ParseFile (std::string &fileName) {
     myFile.open(fileName);
     
     if (myFile.is_open()) {
-        // Step One: First pass through the loop
         // This loop will run until it reaches the end of the file
         bool codeBlock{false};
         while (!myFile.eof()) {
@@ -63,7 +64,7 @@ FileVector ParseFile (std::string &fileName) {
                     std::cout << "Processing... [.endcode]" << std::endl;
                     codeBlock = false;
                 } else {
-                    fileVector.push_back(currentLine);
+                    fileVector.push_back(TrimInput(currentLine));
                 }
             }
             else if (currentLine.find(codeStart) != std::string::npos) {
@@ -78,3 +79,17 @@ FileVector ParseFile (std::string &fileName) {
     return fileVector;
 }
 
+//*************************************************************************************************
+std::string TrimInput(const std::string &input) {
+    // Remove preceding whitespace
+    // Remove semicolon and everything after 
+    // Lines will be of the form:
+    // 'SUB    R3, R2'   
+    const std::string whitespace {" \t"};
+    const std::string endLine {";"};
+    std::string::size_type start = input.find_first_not_of(whitespace);
+    std::string::size_type end = input.find_first_of(endLine);  // Returns npos if not found
+    // substring 2nd arg is length.   It will take all chars to end if npos.
+    std::string trimString = input.substr(start, end == std::string::npos ? end : end-start); 
+    return trimString;
+}
