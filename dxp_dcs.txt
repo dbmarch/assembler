@@ -1,0 +1,48 @@
+; 	dxp's second assembly test program.
+;------------------------------------------------------------------------------
+;	Assembler directives:
+;------------------------------------------------------------------------------
+;
+;
+;
+	.directives;
+	;
+	.equ	constOne	0x1;
+	.equ	constTwo	0x2;
+	;
+	.enddirectives;
+;------------------------------------------------------------------------------
+;	Constant segment:
+;------------------------------------------------------------------------------
+; These values are initialized in the locations at the end of the code segment.
+; For now, .word is the only constant initialization assembly directive.
+; After assembling the code, during the final run, the constant name is 
+;   replaced with its location address in the program memory.
+	.constants;
+;
+	.word	firstConstWord	0xFFFF;
+	;
+	.endconstants;
+;------------------------------------------------------------------------------
+;	Code segment:
+;------------------------------------------------------------------------------
+	.code;
+		SUB		R2, R2;
+		SUB 	R3, R3;
+		ADDC 	R2, 0x3;
+		ADDC 	R2, 0x2;
+		ADD 	R3, R2;
+		NOT 	R2;
+		OR 		R3, R2;
+		AND 	R3, R2;
+		SRA 	R3, 0x1;
+@Label1	RRC 	R2, 0x1;
+		JMP 	C0, @Label1;
+		SWAP 	R3, R2;
+		ST 		R3, M[R0, 0x55];
+		CPY 	R3, R2;
+		LD 		R3, M[R0, 0x55];
+		LD 		R1, M[R0, 0xFF];
+		NOT 	R1;
+		ST 		R1, M[R0, 0xFF];
+	.endcode;
