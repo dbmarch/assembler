@@ -25,12 +25,7 @@ FileVector ParseFile (std::string &fileName);
 
 // Array of strings containing all the Op Codes in their respective order. IN and OUT will become VADD and VSUB later.
 std::string Ops[16] = {"LD", "ST", "CPY", "SWAP", "JMP", "ADD", "SUB", "ADDC", "SUBC", "NOT", "AND", "OR", "SRA", "RRC", "IN", "OUT"};
-
-
 // Load , Store, Jump are doubles
-
-// int j = 0;
-// string jumps[16];
 
 //*************************************************************************************************
 int main(int argc, char** argv) {
@@ -51,46 +46,35 @@ FileVector ParseFile (std::string &fileName) {
     FileVector fileVector;
     std::ifstream myFile;
 
+    const std::string codeStart{".code"};
+    const std::string codeEnd{".endcode"};
 
     myFile.open(fileName);
     
     if (myFile.is_open()) {
         // Step One: First pass through the loop
         // This loop will run until it reaches the end of the file
+        bool codeBlock{false};
         while (!myFile.eof()) {
             std::string currentLine;
             std::getline(myFile, currentLine); // This will read the line from the file and store it into a designated string
-            
-            fileVector.push_back(currentLine);
-
-    #if 0
-            for (int i = 0; i < current_line.length(); i++) { // For loop to parse through the string.
-                if (current_line.at(i) == ' ') {
-                    // Do nothing - let the loop iterate onward since it is a space
-                }
-                else if (current_line.at(i) == ';') {
-                    // We need to exit the for loop since we have reached a comment or end of line. There is no further useful information here to work with
-                    i = current_line.length();
-                }
-                else {
-                    // We have reached a non-commented line character
-                    if (current_line.at(i) == '@') {
-                        string word;
-                        for (i = i; current_line.at(i) != ' '; i++) {
-                            jumps[j].append(&current_line.at(i));
-                        }
-                        j++;
-                    }
+            if (codeBlock) {
+                if (currentLine.find(codeEnd) != std::string::npos) {
+                    std::cout << "Processing... [.endcode]" << std::endl;
+                    codeBlock = false;
+                } else {
+                    fileVector.push_back(currentLine);
                 }
             }
-            cout << endl;
-    #endif        
+            else if (currentLine.find(codeStart) != std::string::npos) {
+                    std::cout << "Processing... [.code]" << std::endl;
+                    codeBlock = true;
+                }
         }
-
-
        myFile.close(); // Closing the file after completion
     } else {
         std::cout << "File could not be opened: " << fileName << std::endl;
     }
     return fileVector;
 }
+
