@@ -43,7 +43,7 @@ const Program OPCODE_LIST = {
     { "ST",         0x01,   true,           REQUIRED,   REQUIRED,   REQUIRED,  NO_LABEL  },
     { "CPY",        0x02,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
     { "SWAP",       0x03,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
-    { "JMP",        0x04,   true,           REQUIRED,   REQUIRED,   REQUIRED,  HAS_LABEL },
+    { "JMP",        0x04,   true,           REQUIRED,   NONE,       NONE,      HAS_LABEL },
     { "ADD",        0x05,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
     { "SUB",        0x06,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
     { "ADDC",       0x07,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
@@ -91,14 +91,16 @@ int main(int argc, char** argv) {
     FileVector fileVector = ParseFile(fileName);
 
     Program program;
+    int cnt{1};
     for ( const auto line : fileVector) {
-        std::cout << "PARSE '" << line  << "'" << std::endl;
+        std::cout << "LINE " << std::to_string(cnt++) << ": '" << line  << "'" << std::endl;
        Operation operation{};
        if (ParseOperation(line, operation)) {
            program.push_back(operation);
        } else {
            std::cout << "SYNTAX ERROR: '" << line << "'" << std::endl;
            success = false;
+           break;
        }
     }
 
@@ -172,40 +174,44 @@ std::string Token(const std::string &input, std::string &token) {
         token = "";
         return input;
     }
+    try {
     // returns the first token
     const std::string delim {", \t"};
     std::string::size_type end = input.find_first_of(delim);
     // substring 2nd arg is length.   It will take all chars to end if npos.
     token = input.substr(0, end); 
-    std::string s = input.substr(end);
-    printf ("%s trim '%s'\n", __func__, s.c_str());
-    // Now remove the extra white space
-    std::string::size_type start = s.find_first_not_of(delim);
-    printf ("%s returns '%s'\n", __func__, s.substr(start).c_str());
-    return s.substr(start);
+    // If there are no more tokens we can't create a string from the end
+    if (end != std::string::npos) {
+        std::string s = input.substr(end);
+        std::string::size_type start = s.find_first_not_of(delim);
+        return s.substr(start);
+    }
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+    
+    return std::string{};
 }
 
 //*************************************************************************************************
 bool ParseOperation(const std::string &line, Operation &operation) {
-   std::string firstToken;  // First token on the line.  Either an opcode or a label
-   std::string s = Token(line, firstToken);
-   if (firstToken.empty()) {
+   std::string token;  // First token on the line.  Either an opcode or a label
+   std::string s = Token(line, token);
+   if (token.empty()) {
       std::cout << "ParseOperation Failed empty opcode" << std::endl;
       return false; // Syntax Error
    }
-   
    std::string label;
    Operation opcodeRule;
-   if (LookupOperation(firstToken, opcodeRule)) {
-       std::cout << "...Table Entry Found" << std::endl;
+   if (!LookupOperation(token, opcodeRule)) {
+       std::cout << "\tLABEL " << token;
 
-   } else {
-       std::cout << "...label found '" << firstToken << "'" << std::endl;
-       label = firstToken;
-       if (LookupOperation(firstToken, opcodeRule)) {
-          std::cout << "...Table Entry Found" << std::endl;
-       } else {
-          std::cout << "ERROR FINDING OPCODE TABLE ENTRY FOR: " << firstToken << std::endl;
+       label = token;
+       s = Token(s, token);
+       if (!LookupOperation(token, opcodeRule)) {
+          std::cout << "ERROR FINDING OPCODE TABLE ENTRY FOR: " << token << std::endl;
           return false;
        }
    }
@@ -214,24 +220,26 @@ bool ParseOperation(const std::string &line, Operation &operation) {
    // Now we have the table entry
    // Parse the REGISTERS, VALUES, LABELS
    if (opcodeRule.reg1 == REQUIRED) {
-      s = Token(s, firstToken);
-      std::cout << "... REG1 " << firstToken << std::endl;
-   } else if (opcodeRule.reg2 == REQUIRED) {
-      s = Token(s, firstToken);
-      std::cout << "... REG2 " << firstToken << std::endl;      
-   } else if (opcodeRule.value == REQUIRED) {
-      s = Token(s, firstToken);
-      std::cout << "... VALUE " << firstToken << std::endl;      
-   } else if (opcodeRule.label == HAS_LABEL) {
+      s = Token(s, token);
+      std::cout << "\tREG1 " << token;
+   } 
+   if (opcodeRule.reg2 == REQUIRED) {
+      s = Token(s, token);
+      std::cout << "\tREG2 " << token;
+   } 
+   if (opcodeRule.value == REQUIRED) {
+      s = Token(s, token);
+      std::cout << "\tVALUE " << token;
+   }
+   if (opcodeRule.label == HAS_LABEL) {
       if (!label.empty()) {
         std::cout << "JUMPING TO A JMP NOT PERMITTED" << std::endl;
         return false;
       }
-      s = Token(s, firstToken);
-      std::cout << "... LABEL " << firstToken << std::endl;            
-
+      s = Token(s, token);
+      std::cout << "\tLABEL " << token;
    }
-   std::cout<< "Processing... ["<< operation.opCode << "]" << std::endl;
+   std::cout<< std::endl << "\t["<< operation.opCode << "]" << std::endl;
    return true;
 }
 
