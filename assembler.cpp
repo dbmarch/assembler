@@ -29,6 +29,7 @@ using Operation = struct{
 };
 
 using Record = struct {
+    uint16_t addr;
     std::string inputLine;
     Operation operation;
 };
@@ -84,8 +85,9 @@ const OperationList OPCODE_LIST = {
 // FUNCTION DECLARATIONS
 
 // Parse the file
+// Codetags are '.code' & '.endcode'  To run without them change to false
 using FileVector = std::vector<std::string>;
-FileVector ParseFile (std::string &fileName);
+FileVector ParseFile (std::string &fileName, bool useCodeTags = true);
 
 // Trim the input line 
 std::string TrimInput(const std::string &input);
@@ -117,8 +119,11 @@ bool ParseNumeric(const std::string &token, int &value);
 // Parse a register offset
 // return true if register and value filled in
 bool ParseRegisterOffset(const std::string &token, int &reg, int &value);
-// Load , Store, Jump are doubles
 
+// Scan the program to determine the offset for a label from a addr where jmp is located.
+bool GetJumpOffset( const Program &program, const std::string &label, uint16_t fromAddr, uint16_t &offset );
+
+// Convert a 16 bit value to hex string
 std::string ToString( uint16_t addr );
 
 //*************************************************************************************************
@@ -130,19 +135,23 @@ int main(int argc, char** argv) {
 
     Program program;
     int cnt{1};
+    uint16_t addr{};
     for ( const auto line : fileVector) {
-        std::cout << "LINE " << std::to_string(cnt++) << ": '" << line  << "'" << std::endl;
+        std::cout << "LINE " << std::to_string(cnt) << ": '" << line  << "'" << std::endl;
        Operation operation{};
        if (ParseOperation(line, operation)) {
             Record record{};
+            record.addr = addr;
             record.inputLine = line;
             record.operation = operation;
             program.push_back(record);
+            addr+=record.operation.extraLong ? 2 : 1;
        } else {
            std::cout << "SYNTAX ERROR: '" << line << "'" << std::endl;
            success = false;
            break;
        }
+       ++cnt;
     }
 
     if (success) {
@@ -161,7 +170,7 @@ int main(int argc, char** argv) {
 
 
 //*************************************************************************************************
-FileVector ParseFile (std::string &fileName) {
+FileVector ParseFile (std::string &fileName, bool useCodeTags) {
     FileVector fileVector;
     std::ifstream myFile;
 
@@ -172,7 +181,7 @@ FileVector ParseFile (std::string &fileName) {
     
     if (myFile.is_open()) {
         // This loop will run until it reaches the end of the file
-        bool codeBlock{false};
+        bool codeBlock{!useCodeTags};
         while (!myFile.eof()) {
             std::string currentLine;
             std::getline(myFile, currentLine); // This will read the line from the file and store it into a designated string
@@ -359,7 +368,7 @@ bool ParseRegisterOffset(const std::string &token, int &reg, int &value) {
             s = Token(s, regStr);
             std::string valStr;
             Token(s, valStr);
-            if(ParseRegister(regStr, reg) || ParseNumeric(valStr, value)) {
+            if(ParseRegister(regStr, reg) && ParseNumeric(valStr, value)) {
                 return true;
             } else {
                 std::cerr << std::endl << "SYNTAX ERROR: RegisterOffset malformed " <<  token << std::endl;
@@ -376,6 +385,7 @@ bool ParseRegisterOffset(const std::string &token, int &reg, int &value) {
 
 //*************************************************************************************************
 bool GenerateAssembly (const std::string &fileName, const Program &program) {
+    bool success{true};
     std::cout << "Generating assembly..." << std::endl;
     std::ofstream outputFile;
     outputFile.open(fileName);
@@ -386,12 +396,12 @@ bool GenerateAssembly (const std::string &fileName, const Program &program) {
 
     outputFile << "--Program Memory Initialization File" << std::endl;
     outputFile << "WIDTH = 16;" << std::endl;
-    outputFile << "DEPTH = " << depth << ";" <<std::endl;
+    // outputFile << "DEPTH = " << depth << ";" << std::endl;
     outputFile << "ADDRESS_RADIX = HEX;" << std::endl;
     outputFile << "DATA_RADIX = BIN;"<< std::endl;
-    outputFile << "CONTENT BEGIN" << std::endl;
+    outputFile << std::endl << "CONTENT BEGIN" << std::endl <<  std::endl;
     outputFile << "--A> : <OC><-Ri-><-Rj->" << std::endl;
-    int addr{};
+    int addr{0};
     for ( const auto record : program) {
         constexpr int opcodeMask{0xF};
         constexpr int regMask{0x3F};
@@ -433,7 +443,12 @@ bool GenerateAssembly (const std::string &fileName, const Program &program) {
                 bits = instr;
                 outputFile << ToString(addr) << " : " << bits << ";  %" << record.inputLine << "; %" << std::endl;
                 addr++;
-                bits = 0;
+                uint16_t offset;
+                if (!GetJumpOffset(program,record.operation.label, record.addr, offset)) {
+                    std::cerr << "ERROR LOOKING UP JMP LABEL " << record.operation.label << std::endl;
+                    break;
+                }
+                bits = offset;
                 outputFile << ToString(addr) << " : " << bits << ";  %" << record.inputLine << "; %" << std::endl;
                 addr++;
                 break;
@@ -474,4 +489,20 @@ std::string ToString( uint16_t addr )
    snprintf(buf, sizeof(buf), "%04X", addr);
    std::string s(buf);
    return s;
+}
+
+//*************************************************************************************************
+bool GetJumpOffset( const Program &program, const std::string &label, uint16_t fromAddr, uint16_t &offset )
+{
+    bool success{false};
+    uint16_t toAddr;
+    for (const auto record : program) {
+        if (label == record.operation.label && record.addr != fromAddr) {
+            toAddr = record.addr;
+            offset = record.addr - fromAddr;
+            printf ("JUMP %s FROM %04X TO %04X OFFSET=%04X\n", label.c_str(), fromAddr, record.addr, offset);
+            success = true;
+        }
+    }
+    return success;
 }
