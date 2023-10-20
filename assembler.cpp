@@ -9,7 +9,7 @@ arraytomif()    Print binary machine code array to mif file.
 
 This represents the flow the program should go through
 */
-
+#include <cstdlib>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -27,17 +27,22 @@ using Operation = struct{
     std::string label;  // Assume that you can't jump to a jump ( only 1 label )
 };
 
+using Record = struct {
+    std::string inputLine;
+    Operation operation;
+};
+
 // Fields filled in with REQUIRED/NONE:
 const int REQUIRED{-1};
 const int NONE{-2};
 const std::string HAS_LABEL{"LABEL"};
 const std::string NO_LABEL{""};
 
-using Program = std::vector<Operation>;
+using Program = std::vector<Record>;
+using OperationList = std::vector<Operation>;
 
 // Array of strings containing all the Op Codes in their respective order. IN and OUT will become VADD and VSUB later.
-// std::string Ops[16] = {"LD", "ST", "CPY", "SWAP", "JMP", "ADD", "SUB", "ADDC", "SUBC", "NOT", "AND", "OR", "SRA", "RRC", "IN", "OUT"};
-const Program OPCODE_LIST = {
+const OperationList OPCODE_LIST = {
     // Opcode       code    // ExtraLong     R1          R2            Value   Label
     { "LD",         0x00,   true,           REQUIRED,   REQUIRED,   REQUIRED,  NO_LABEL  },
     { "ST",         0x01,   true,           REQUIRED,   REQUIRED,   REQUIRED,  NO_LABEL  },
@@ -46,7 +51,7 @@ const Program OPCODE_LIST = {
     { "JMP",        0x04,   true,           REQUIRED,   NONE,       NONE,      HAS_LABEL },
     { "ADD",        0x05,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
     { "SUB",        0x06,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
-    { "ADDC",       0x07,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
+    { "ADDC",       0x07,   false,          REQUIRED,   NONE,       REQUIRED,  NO_LABEL  },
     { "SUBC",       0x08,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
     { "NOT",        0x09,   false,          REQUIRED,   NONE,       NONE,      NO_LABEL  },
     { "AND",        0x0A,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
@@ -82,6 +87,17 @@ bool GenerateAssembly (const Program &program);
 // Otherwise return false
 bool LookupOperation (const std::string &token, Operation &opcodeRule);
 
+// Parse the token for a register value  'R#'
+// Return true if value filled in
+bool ParseRegister(const std::string &token, int &value);
+
+// Parse the token for a  value  '#'
+// Return true if value filled in
+bool ParseNumeric(const std::string &token, int &value);
+
+// Parse a register offset
+// return true if register and value filled in
+bool ParseRegisterOffset(const std::string &token, int &reg, int &value);
 // Load , Store, Jump are doubles
 
 //*************************************************************************************************
@@ -96,7 +112,10 @@ int main(int argc, char** argv) {
         std::cout << "LINE " << std::to_string(cnt++) << ": '" << line  << "'" << std::endl;
        Operation operation{};
        if (ParseOperation(line, operation)) {
-           program.push_back(operation);
+            Record record{};
+            record.inputLine = line;
+            record.operation = operation;
+            program.push_back(record);
        } else {
            std::cout << "SYNTAX ERROR: '" << line << "'" << std::endl;
            success = false;
@@ -207,7 +226,6 @@ bool ParseOperation(const std::string &line, Operation &operation) {
    Operation opcodeRule;
    if (!LookupOperation(token, opcodeRule)) {
        std::cout << "\tLABEL " << token;
-
        label = token;
        s = Token(s, token);
        if (!LookupOperation(token, opcodeRule)) {
@@ -221,23 +239,44 @@ bool ParseOperation(const std::string &line, Operation &operation) {
    // Parse the REGISTERS, VALUES, LABELS
    if (opcodeRule.reg1 == REQUIRED) {
       s = Token(s, token);
-      std::cout << "\tREG1 " << token;
-   } 
-   if (opcodeRule.reg2 == REQUIRED) {
-      s = Token(s, token);
-      std::cout << "\tREG2 " << token;
-   } 
-   if (opcodeRule.value == REQUIRED) {
-      s = Token(s, token);
-      std::cout << "\tVALUE " << token;
-   }
-   if (opcodeRule.label == HAS_LABEL) {
-      if (!label.empty()) {
-        std::cout << "JUMPING TO A JMP NOT PERMITTED" << std::endl;
+      if (ParseRegister(token, operation.reg1)) {
+        std::cout << "\tREG1 R" << operation.reg1;
+      } else {
         return false;
       }
-      s = Token(s, token);
-      std::cout << "\tLABEL " << token;
+   }
+   // Special handling for Register offset.   
+   // Could have made a new table entry but to keep things simple we will do this.
+   if (opcodeRule.extraLong && opcodeRule.reg2 == REQUIRED && opcodeRule.value == REQUIRED) {
+      if (ParseRegisterOffset(s, operation.reg2, operation.value)) {
+         std::cout << "\t REGOFF R" << std::to_string(operation.reg2) << ", " << std::hex << operation.value;
+      }
+   } else {
+       if (opcodeRule.reg2 == REQUIRED) {
+          s = Token(s, token);
+          if (ParseRegister(token, operation.reg2)) {
+            std::cout << "\tREG2 R" << operation.reg2;
+          } else {
+            return false;
+          }
+       } 
+       if (opcodeRule.value == REQUIRED) {
+          s = Token(s, token);
+          if (ParseNumeric(token, operation.value)) {
+            std::cout << "\tVALUE " << std::hex << operation.value;
+          } else {
+            return false;
+          }
+       }
+       if (opcodeRule.label == HAS_LABEL) {
+          if (!label.empty()) {
+            std::cout << "JUMPING TO A JMP NOT PERMITTED" << std::endl;
+            return false;
+          }
+          s = Token(s, token);
+          operation.label = token;
+          std::cout << "\tLABEL " << token;
+       }
    }
    std::cout<< std::endl << "\t["<< operation.opCode << "]" << std::endl;
    return true;
@@ -262,3 +301,58 @@ bool LookupOperation (const std::string &token, Operation &opcodeRule) {
     return false;
 }
 
+
+//*************************************************************************************************
+bool ParseRegister(const std::string &token, int &value) {
+    if (token.length()) {
+        std::string reg = token.substr(1); 
+        try {
+            value = std::stoi(reg.c_str());
+            return true;
+        }
+        catch(...) {
+            std::cerr << std::endl << "SYNTAX ERROR: REGISTER malformed " <<  token << std::endl;
+        }
+
+        return ParseNumeric(reg, value);
+    }
+    std::cerr << std::endl << "SYNTAX ERROR: Register malformed " <<  token << std::endl;
+    return false;
+}
+
+//*************************************************************************************************
+bool ParseNumeric(const std::string &token, int &value) {
+    try {
+        value = strtol(token.c_str(), nullptr, 16);
+        return true;
+    }
+    catch(...) {
+        std::cerr << std::endl << "SYNTAX ERROR: Numeric malformed " <<  token << std::endl;
+    }
+    return false;
+}
+
+//*************************************************************************************************
+bool ParseRegisterOffset(const std::string &token, int &reg, int &value) {
+    // Format:   M[R[reg], value]
+    if (token.length() > 7 && token[0]== 'M' && token[1] == '[') {
+        try {
+            std::string s = token.substr(2);
+            std::string regStr;
+            s = Token(s, regStr);
+            std::string valStr;
+            Token(s, valStr);
+            if(ParseRegister(regStr, reg) || ParseNumeric(valStr, value)) {
+                return true;
+            } else {
+                std::cerr << std::endl << "SYNTAX ERROR: RegisterOffset malformed " <<  token << std::endl;
+            }
+        } catch(...) {
+            std::cerr << std::endl << "SYNTAX ERROR: RegisterOffset malformed " <<  token << std::endl;
+        }
+    return false;
+    } else {
+        std::cerr << std::endl << "SYNTAX ERROR: RegisterOffset malformed " <<  token << std::endl;
+    }
+    return false;
+}
