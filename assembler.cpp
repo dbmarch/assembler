@@ -9,6 +9,7 @@ arraytomif()    Print binary machine code array to mif file.
 
 This represents the flow the program should go through
 */
+#include <bitset>
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
@@ -41,25 +42,43 @@ const std::string NO_LABEL{""};
 using Program = std::vector<Record>;
 using OperationList = std::vector<Operation>;
 
+// We don't 'need' to assign values to these enums but we will since we care about their value
+enum Opcode {
+    OPCODE_LD   = 0x00,
+    OPCODE_ST   = 0x01,
+    OPCODE_COPY = 0x02,
+    OPCODE_SWAP = 0x03,
+    OPCODE_JMP  = 0x04,
+    OPCODE_ADD  = 0x05,
+    OPCODE_SUB  = 0x06,
+    OPCODE_ADDC = 0x07,
+    OPCODE_SUBC = 0x08,
+    OPCODE_NOT  = 0x09,
+    OPCODE_AND  = 0x0A,
+    OPCODE_OR   = 0x0B,
+    OPCODE_SRA  = 0x0C,
+    OPCODE_RRC  = 0x0D,
+};
+
 // Array of strings containing all the Op Codes in their respective order. IN and OUT will become VADD and VSUB later.
 const OperationList OPCODE_LIST = {
-    // Opcode       code    // ExtraLong     R1          R2            Value   Label
-    { "LD",         0x00,   true,           REQUIRED,   REQUIRED,   REQUIRED,  NO_LABEL  },
-    { "ST",         0x01,   true,           REQUIRED,   REQUIRED,   REQUIRED,  NO_LABEL  },
-    { "CPY",        0x02,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
-    { "SWAP",       0x03,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
-    { "JMP",        0x04,   true,           REQUIRED,   NONE,       NONE,      HAS_LABEL },
-    { "ADD",        0x05,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
-    { "SUB",        0x06,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
-    { "ADDC",       0x07,   false,          REQUIRED,   NONE,       REQUIRED,  NO_LABEL  },
-    { "SUBC",       0x08,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
-    { "NOT",        0x09,   false,          REQUIRED,   NONE,       NONE,      NO_LABEL  },
-    { "AND",        0x0A,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
-    { "OR",         0x0B,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
-    { "SRA",        0x0C,   false,          REQUIRED,   NONE,       REQUIRED,  NO_LABEL  },
-    { "RRC",        0x0D,   false,          REQUIRED,   NONE,       REQUIRED,  NO_LABEL  }
-    // { "IN",         0x0E,   false,          REQUIRED,   REQUIRED,   REQUIRED,  NO_LABEL  },
-    // { "OUT",        0x0F,   false,          REQUIRED,   REQUIRED,   REQUIRED,  NO_LABEL  },
+    // Opcode        code    // ExtraLong     R1          R2            Value   Label
+    { "LD",     OPCODE_LD,   true,           REQUIRED,   REQUIRED,   REQUIRED,  NO_LABEL  },
+    { "ST",     OPCODE_ST,   true,           REQUIRED,   REQUIRED,   REQUIRED,  NO_LABEL  },
+    { "CPY",    OPCODE_COPY, false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
+    { "SWAP",   OPCODE_SWAP, false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
+    { "JMP",    OPCODE_JMP,  true,           REQUIRED,   NONE,       NONE,      HAS_LABEL },
+    { "ADD",    OPCODE_ADD,  false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
+    { "SUB",    OPCODE_SUB,  false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
+    { "ADDC",   OPCODE_ADDC, false,          REQUIRED,   NONE,       REQUIRED,  NO_LABEL  },
+    { "SUBC",   OPCODE_SUBC, false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
+    { "NOT",    OPCODE_NOT,  false,          REQUIRED,   NONE,       NONE,      NO_LABEL  },
+    { "AND",    OPCODE_AND,  false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
+    { "OR",     OPCODE_OR,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
+    { "SRA",    OPCODE_SRA,  false,          REQUIRED,   NONE,       REQUIRED,  NO_LABEL  },
+    { "RRC",    OPCODE_RRC,  false,          REQUIRED,   NONE,       REQUIRED,  NO_LABEL  }
+    // { "IN",       0x0E,   false,          REQUIRED,   REQUIRED,   REQUIRED,  NO_LABEL  },
+    // { "OUT",      0x0F,   false,          REQUIRED,   REQUIRED,   REQUIRED,  NO_LABEL  },
 };
 
 // FUNCTION DECLARATIONS
@@ -81,7 +100,7 @@ bool ParseOperation(const std::string &input, Operation &operation);
 
 // From our program generate the assembly.
 // Return true if we generate the file.
-bool GenerateAssembly (const Program &program);
+bool GenerateAssembly (const std::string &fileName, const Program &program);
 
 // Search our OPCODE Table for token.  If we find it, opcodeRule points the the row in the table and we return true.
 // Otherwise return false
@@ -100,10 +119,13 @@ bool ParseNumeric(const std::string &token, int &value);
 bool ParseRegisterOffset(const std::string &token, int &reg, int &value);
 // Load , Store, Jump are doubles
 
+std::string ToString( uint16_t addr );
+
 //*************************************************************************************************
 int main(int argc, char** argv) {
     bool success{true};
     std::string fileName{"dxp_dcs.txt"};
+    std::string outputFile{"dxp_dcs.mif"};
     FileVector fileVector = ParseFile(fileName);
 
     Program program;
@@ -124,14 +146,16 @@ int main(int argc, char** argv) {
     }
 
     if (success) {
-        std::cout << "Processing Complete...Generating Assembly" << std::endl;
-        success = GenerateAssembly(program);
+        std::cout << "Processing Complete..." << std::endl;
+        success = GenerateAssembly(outputFile, program);
 
         if (!success) {
             std::cout << "FAILED TO GENERATE ASSEMBLY" << std::endl;
         }
     }
-
+    if (success) {
+        std::cout << "OUTPUT FILE " << outputFile << std::endl;
+    }
     return success ? 0 : -1;
 }
 
@@ -278,15 +302,8 @@ bool ParseOperation(const std::string &line, Operation &operation) {
           std::cout << "\tLABEL " << token;
        }
    }
-   std::cout<< std::endl << "\t["<< operation.opCode << "]" << std::endl;
+   std::cout<< "\t["<< operation.opCode << "]" << std::endl;
    return true;
-}
-
-
-//*************************************************************************************************
-bool GenerateAssembly (const Program &program) {
-    std::cout << "Generating assembly..." << std::endl;
-    return false;
 }
 
 //*************************************************************************************************
@@ -355,4 +372,106 @@ bool ParseRegisterOffset(const std::string &token, int &reg, int &value) {
         std::cerr << std::endl << "SYNTAX ERROR: RegisterOffset malformed " <<  token << std::endl;
     }
     return false;
+}
+
+//*************************************************************************************************
+bool GenerateAssembly (const std::string &fileName, const Program &program) {
+    std::cout << "Generating assembly..." << std::endl;
+    std::ofstream outputFile;
+    outputFile.open(fileName);
+    if (!outputFile.is_open()) {
+        std::cerr << "ERROR:  UNABLE TO OPEN OUTPUT FILE "<< fileName << std::endl;
+    }
+    constexpr uint16_t depth{1024};
+
+    outputFile << "--Program Memory Initialization File" << std::endl;
+    outputFile << "WIDTH = 16;" << std::endl;
+    outputFile << "DEPTH = " << depth << ";" <<std::endl;
+    outputFile << "ADDRESS_RADIX = HEX;" << std::endl;
+    outputFile << "DATA_RADIX = BIN;"<< std::endl;
+    outputFile << "CONTENT BEGIN" << std::endl;
+    outputFile << "--A> : <OC><-Ri-><-Rj->" << std::endl;
+    int addr{};
+    for ( const auto record : program) {
+        constexpr int opcodeMask{0xF};
+        constexpr int regMask{0x3F};
+        uint16_t instr;
+        std::bitset<16> bits;
+        switch (record.operation.code) {
+            case OPCODE_ADD:
+            case OPCODE_COPY:
+            case OPCODE_SWAP:
+            case OPCODE_SUB:
+            case OPCODE_AND:
+            case OPCODE_OR:
+                // These operations are OPCODE REG1 REG2
+                instr = (record.operation.code & opcodeMask) << 12;
+                instr |= (record.operation.reg1 & regMask) << 6;
+                instr |= (record.operation.reg2 & regMask);
+                bits = instr;
+                outputFile<< ToString(addr) << " : " << bits << ";  %" << record.inputLine << "; %" << std::endl;
+                addr++;
+                break;
+
+            case OPCODE_LD:
+            case OPCODE_ST:
+                // These operations are OPCODE REG1 REG2 , VALUE
+                instr = (record.operation.code & opcodeMask) << 12;
+                instr |= (record.operation.reg1 & regMask) << 6;
+                instr |= (record.operation.reg2 & regMask);
+                bits = instr;
+                outputFile << ToString(addr) << " : " << bits << ";  %" << record.inputLine << "; %" << std::endl;
+                addr++;
+                bits = record.operation.value;
+                outputFile << ToString(addr) << " : " << bits << ";  %" << record.inputLine << "; %" << std::endl;
+                addr++;
+                break;
+    
+            case OPCODE_JMP:
+                // These operations are OPCODE LABEL
+                instr = (record.operation.code & opcodeMask) << 12;
+                bits = instr;
+                outputFile << ToString(addr) << " : " << bits << ";  %" << record.inputLine << "; %" << std::endl;
+                addr++;
+                bits = 0;
+                outputFile << ToString(addr) << " : " << bits << ";  %" << record.inputLine << "; %" << std::endl;
+                addr++;
+                break;
+
+            case OPCODE_ADDC:
+            case OPCODE_SUBC:
+            case OPCODE_RRC:
+            case OPCODE_SRA:
+                // These operations are OPCODE REG1 VALUE
+                instr = (record.operation.code & opcodeMask) << 12;
+                instr |= (record.operation.reg1 & regMask) << 6;
+                instr |= (record.operation.value & regMask);
+                bits = instr;
+                outputFile << ToString(addr) << " : " << bits << ";  %" << record.inputLine << "; %" << std::endl;
+                addr++;
+                break;
+    
+            case OPCODE_NOT:
+                // These operations are OPCODE REG1
+                instr = (record.operation.code & opcodeMask) << 12;
+                instr |= (record.operation.reg1 & regMask) << 6;
+                bits = instr;
+                addr++;
+                break;
+        }
+    }
+    outputFile << "[ " << ToString(addr) << " .. " << ToString(depth-1) << " ] : 00000000; % Fill the remaining locations" << std::endl;
+    outputFile << "END;" << std::endl;
+    outputFile.close();
+    return true;
+}
+
+
+//*************************************************************************************************
+std::string ToString( uint16_t addr )
+{
+   char buf[10];
+   snprintf(buf, sizeof(buf), "%04X", addr);
+   std::string s(buf);
+   return s;
 }
