@@ -1,14 +1,4 @@
-// Assembler written by Cody March
-/*
-int main() 
-openfile()      Open assembly file
-filetoarray()   Read in assembly file, storing each non blank line as an index in an array of strings (or a vector would be great)
-step1()         Break apart array of assembly strings into single IW instruction with gaps for double IW instructions
-step2()         Translate array of machine code to binary, inserting addresses for jump to locations
-arraytomif()    Print binary machine code array to mif file.
 
-This represents the flow the program should go through
-*/
 #include <bitset>
 #include <cstdlib>
 #include <iostream>
