@@ -415,8 +415,8 @@ bool GenerateAssembly (const std::string &fileName, const Program &program) {
             case OPCODE_LD:
             case OPCODE_ST:
                 // These operations are OPCODE REG1 REG2 , VALUE
-                instr = (record.operation.code & opcodeMask) << 12;
-                instr |= (record.operation.reg1 & regMask) << 6;
+                instr = (record.operation.code & opcodeMask) << 10;
+                instr |= (record.operation.reg1 & regMask) << 5;
                 instr |= (record.operation.reg2 & regMask);
                 bits = instr;
                 outputFile << ToString(addr) << " : " << bits << ";  %" << record.inputLine << "; %" << std::endl;
@@ -428,7 +428,7 @@ bool GenerateAssembly (const std::string &fileName, const Program &program) {
     
             case OPCODE_JMP:
                 // These operations are OPCODE LABEL
-                instr = (record.operation.code & opcodeMask) << 12;
+                instr = (record.operation.code & opcodeMask) << 10;
                 bits = instr;
                 outputFile << ToString(addr) << " : " << bits << ";  %" << record.inputLine << "; %" << std::endl;
                 addr++;
@@ -447,8 +447,8 @@ bool GenerateAssembly (const std::string &fileName, const Program &program) {
             case OPCODE_RRC:
             case OPCODE_SRA:
                 // These operations are OPCODE REG1 VALUE
-                instr = (record.operation.code & opcodeMask) << 12;
-                instr |= (record.operation.reg1 & regMask) << 6;
+                instr = (record.operation.code & opcodeMask) << 10;
+                instr |= (record.operation.reg1 & regMask) << 5;
                 instr |= (record.operation.value & regMask);
                 bits = instr;
                 outputFile << ToString(addr) << " : " << bits << ";  %" << record.inputLine << "; %" << std::endl;
@@ -457,8 +457,8 @@ bool GenerateAssembly (const std::string &fileName, const Program &program) {
     
             case OPCODE_NOT:
                 // These operations are OPCODE REG1
-                instr = (record.operation.code & opcodeMask) << 12;
-                instr |= (record.operation.reg1 & regMask) << 6;
+                instr = (record.operation.code & opcodeMask) << 10;
+                instr |= (record.operation.reg1 & regMask) << 5;
                 bits = instr;
                 addr++;
                 break;
