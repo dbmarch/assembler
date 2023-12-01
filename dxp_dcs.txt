@@ -31,12 +31,12 @@
 		SUB 	R3, R3;
 		ADDC 	R2, 0x3;
 		ADDC 	R2, 0x2;
-		ADD 	R3, R2;
+@Label3 	ADD R3, R2;
 		NOT 	R2;
 		OR 		R3, R2;
 		AND 	R3, R2;
 		SRA 	R3, 0x1;
-@Label1	RRC 	R2, 0x1;
+@Label1	  RRC R2, 0x1;
 		JMP 	C0, @Label1;
 		SWAP 	R3, R2;
 		ST 		R3, M[R0, 0x55];
@@ -45,6 +45,15 @@
 		LD 		R3, M[R0, 0x55];
 @Label2		LD 		R1, M[R0, 0xFF];
 		NOT 	R1;
+		
+		
 		ST 		R1, M[R0, 0xFF];
 		JMP 	C0, @Label1;
+		JMP   N1, @Label3;
+		JMP   N0, @Label1;
+		JMP   V1, @Label3;
+		JMP   V0, @Label2;
+		JMP   Z1, @Label3;
+		JMP   Z0, @Label1;
+		JMP 	U0, @Label1;
 	.endcode;

@@ -58,15 +58,15 @@ enum Opcode {
     OPCODE_RRC  = 0x0D,
 };
 const ConditionList CONDITION_LIST = {
-  {"C1", 0x1000},
-  {"N1", 0x0100},
-  {"V1", 0x0010},
-  {"Z1", 0x0001},
-  {"C0", 0x0111},
-  {"N0", 0x1011},
-  {"V0", 0x1101},
-  {"Z0", 0x1110},
-  {"U0", 0x0000}        // Unconditional jump 
+  {"C1", 0x8},      // 1000b
+  {"N1", 0x4},      // 0100b
+  {"V1", 0x2},      // 0010b
+  {"Z1", 0x1},      // 0001b
+  {"C0", 0x7},      // 0111b
+  {"N0", 0xB},      // 1011b
+  {"V0", 0xD},      // 1101b
+  {"Z0", 0xE},      // 1110b
+  {"U0", 0x0}       // 0000b    // Unconditional jump 
 };
 
 
@@ -201,7 +201,10 @@ FileVector ParseFile (std::string &fileName, bool useCodeTags) {
                     std::cout << "Processing... [.endcode]" << std::endl;
                     codeBlock = false;
                 } else {
-                    fileVector.push_back(TrimInput(currentLine));
+                    std::string cleanLine{TrimInput(currentLine)};
+                    if (cleanLine.length()) {
+                        fileVector.push_back(cleanLine);
+                    }
                 }
             }
             else if (currentLine.find(codeStart) != std::string::npos) {
@@ -223,10 +226,11 @@ std::string TrimInput(const std::string &input) {
     // Lines will be of the form:
     // 'SUB    R3, R2'   
     const std::string whitespace {" \t"};
-    const std::string endLine {";"};
+    const std::string endLine {";\r\n"};
     std::string::size_type start = input.find_first_not_of(whitespace);
     std::string::size_type end = input.find_first_of(endLine);  // Returns npos if not found
     // substring 2nd arg is length.   It will take all chars to end if npos.
+    
     std::string trimString = input.substr(start, end == std::string::npos ? end : end-start); 
     return trimString;
 }
@@ -287,7 +291,6 @@ bool ParseOperation(const std::string &line, Operation &operation) {
    // Parse the REGISTERS, VALUES, LABELS
    if (opcodeRule.reg1 == REQUIRED) {
       s = Token(s, token);
-      printf ("REG=%s\n", s.c_str());
       if (ParseCondition(token, operation.reg1)) {
         std::cout << "\tCNVZ[" << operation.reg1 << "]";
       }
@@ -367,11 +370,9 @@ bool ParseRegister(const std::string &token, int &value) {
 
 //*************************************************************************************************
 bool ParseCondition(const std::string &token, int &value) {
-    printf ("token=%s\n", token.c_str());
     for (const auto &entry : CONDITION_LIST) {
         if (entry.code == token) {
             value = entry.value;
-            printf ("code=%s value=%04X\n", entry.code.c_str(), value );
             return true;
         }
     }
@@ -450,7 +451,7 @@ bool GenerateAssembly (const std::string &fileName, const Program &program) {
                 instr |= (record.operation.reg1 & regMask) << 5;
                 instr |= (record.operation.reg2 & regMask);
                 bits = instr;
-                outputFile<< ToString(addr) << " : " << bits << ";  %" << record.inputLine << "; %" << std::endl;
+                outputFile<< ToString(addr) << " : " << bits << ";  % " << record.inputLine << "; %" << std::endl;
                 addr++;
                 break;
 
@@ -461,21 +462,19 @@ bool GenerateAssembly (const std::string &fileName, const Program &program) {
                 instr |= (record.operation.reg1 & regMask) << 5;
                 instr |= (record.operation.reg2 & regMask);
                 bits = instr;
-                outputFile << ToString(addr) << " : " << bits << ";  %" << record.inputLine << "; %" << std::endl;
+                outputFile << ToString(addr) << " : " << bits << ";  % " << record.inputLine << "; %" << std::endl;
                 addr++;
                 bits = record.operation.value;
-                outputFile << ToString(addr) << " : " << bits << ";  %" << record.inputLine << "; %" << std::endl;
+                outputFile << ToString(addr) << " : " << bits << ";  % " << record.inputLine << "; %" << std::endl;
                 addr++;
                 break;
     
             case OPCODE_JMP:
                 // These operations are OPCODE LABEL
                 instr = (record.operation.code & opcodeMask) << 10;
-                printf ("JUMP on Condition %04X\n", record.operation.reg1);
                 instr |= (record.operation.reg1 & 0xFFFF);
-                printf ("%04X\n", instr);
                 bits = instr;
-                outputFile << ToString(addr) << " : " << bits << ";  %" << record.inputLine << "; %" << std::endl;
+                outputFile << ToString(addr) << " : " << bits << ";  % " << record.inputLine << "; %" << std::endl;
                 addr++;
                 uint16_t offset;
                 if (!GetJumpOffset(program,record.operation.label, record.addr, offset)) {
@@ -483,7 +482,7 @@ bool GenerateAssembly (const std::string &fileName, const Program &program) {
                     break;
                 }
                 bits = offset;
-                outputFile << ToString(addr) << " : " << bits << ";  %" << record.inputLine << "; %" << std::endl;
+                outputFile << ToString(addr) << " : " << bits << ";  % " << record.inputLine << "; %" << std::endl;
                 addr++;
                 break;
 
@@ -532,7 +531,7 @@ bool GetJumpOffset( const Program &program, const std::string &label, uint16_t f
     for (const auto record : program) {
         if (label == record.operation.label && record.operation.labelDestination) {
             toAddr = record.addr;
-            printf ("JUMP %s FROM %04X TO %04X\n", label.c_str(), fromAddr, toAddr);
+            // printf ("JUMP %s FROM %04X TO %04X\n", label.c_str(), fromAddr, toAddr);
             success = true;
             break;
         }
