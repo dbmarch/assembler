@@ -385,18 +385,17 @@ bool GenerateAssembly (const std::string &fileName, const Program &program) {
     constexpr uint16_t depth{1024};
 
     outputFile << "--Program Memory Initialization File" << std::endl;
-    outputFile << "WIDTH = 16;" << std::endl;
-    // outputFile << "DEPTH = " << depth << ";" << std::endl;
+    outputFile << "WIDTH = 14;" << std::endl;
     outputFile << "ADDRESS_RADIX = HEX;" << std::endl;
     outputFile << "DATA_RADIX = BIN;"<< std::endl;
     outputFile << std::endl << "CONTENT BEGIN" << std::endl <<  std::endl;
-    outputFile << "--A> : <OC><-Ri-><-Rj->" << std::endl;
+    outputFile << "<Ad> : <OC><Ri-><Rj->" << std::endl;
     int addr{0};
     for ( const auto record : program) {
         constexpr int opcodeMask{0xF};
-        constexpr int regMask{0x3F};
+        constexpr int regMask{0x1F};
         uint16_t instr;
-        std::bitset<16> bits;
+        std::bitset<14> bits;
         switch (record.operation.code) {
             case OPCODE_ADD:
             case OPCODE_COPY:
@@ -405,8 +404,8 @@ bool GenerateAssembly (const std::string &fileName, const Program &program) {
             case OPCODE_AND:
             case OPCODE_OR:
                 // These operations are OPCODE REG1 REG2
-                instr = (record.operation.code & opcodeMask) << 12;
-                instr |= (record.operation.reg1 & regMask) << 6;
+                instr = (record.operation.code & opcodeMask) << 10;
+                instr |= (record.operation.reg1 & regMask) << 5;
                 instr |= (record.operation.reg2 & regMask);
                 bits = instr;
                 outputFile<< ToString(addr) << " : " << bits << ";  %" << record.inputLine << "; %" << std::endl;
