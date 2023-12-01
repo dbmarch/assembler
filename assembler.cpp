@@ -495,7 +495,7 @@ bool GenerateAssembly (const std::string &fileName, const Program &program) {
                 instr |= (record.operation.reg1 & regMask) << 5;
                 instr |= (record.operation.value & regMask);
                 bits = instr;
-                outputFile << ToString(addr) << " : " << bits << ";  %" << record.inputLine << "; %" << std::endl;
+                outputFile << ToString(addr) << " : " << bits << ";  % " << record.inputLine << "; %" << std::endl;
                 addr++;
                 break;
     
@@ -504,6 +504,7 @@ bool GenerateAssembly (const std::string &fileName, const Program &program) {
                 instr = (record.operation.code & opcodeMask) << 10;
                 instr |= (record.operation.reg1 & regMask) << 5;
                 bits = instr;
+                outputFile << ToString(addr) << " : " << bits << ";  % " << record.inputLine << "; %" << std::endl;
                 addr++;
                 break;
         }
