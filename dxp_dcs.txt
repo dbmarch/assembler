@@ -41,7 +41,7 @@
 		SWAP 	R3, R2;
 		ST 		R3, M[R0, 0x55];
 		CPY 	R3, R2;
-	  JMP   C0, @Label2;
+	  JMP   C1, @Label2;
 		LD 		R3, M[R0, 0x55];
 @Label2		LD 		R1, M[R0, 0xFF];
 		NOT 	R1;

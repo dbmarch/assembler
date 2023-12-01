@@ -16,6 +16,7 @@ using Operation = struct{
     int reg2;
     int value;
     std::string label;  // Assume that you can't jump to a jump ( only 1 label )
+    bool labelDestination; // A jump location.
 };
 
 using Record = struct {
@@ -23,6 +24,12 @@ using Record = struct {
     std::string inputLine;
     Operation operation;
 };
+
+using Condition = struct {
+    std::string code;
+    uint16_t value;
+};
+using ConditionList = std::vector<Condition>;
 
 // Fields filled in with REQUIRED/NONE:
 const int REQUIRED{-1};
@@ -50,26 +57,36 @@ enum Opcode {
     OPCODE_SRA  = 0x0C,
     OPCODE_RRC  = 0x0D,
 };
+const ConditionList CONDITION_LIST = {
+  {"C1", 0x1000},
+  {"N1", 0x0100},
+  {"V1", 0x0010},
+  {"Z1", 0x0001},
+  {"C0", 0x0111},
+  {"N0", 0x1011},
+  {"V0", 0x1101},
+  {"Z0", 0x1110},
+  {"U0", 0x0000}        // Unconditional jump 
+};
+
 
 // Array of strings containing all the Op Codes in their respective order. IN and OUT will become VADD and VSUB later.
 const OperationList OPCODE_LIST = {
-    // Opcode        code    // ExtraLong     R1          R2            Value   Label
-    { "LD",     OPCODE_LD,   true,           REQUIRED,   REQUIRED,   REQUIRED,  NO_LABEL  },
-    { "ST",     OPCODE_ST,   true,           REQUIRED,   REQUIRED,   REQUIRED,  NO_LABEL  },
-    { "CPY",    OPCODE_COPY, false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
-    { "SWAP",   OPCODE_SWAP, false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
-    { "JMP",    OPCODE_JMP,  true,           REQUIRED,   NONE,       NONE,      HAS_LABEL },
-    { "ADD",    OPCODE_ADD,  false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
-    { "SUB",    OPCODE_SUB,  false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
-    { "ADDC",   OPCODE_ADDC, false,          REQUIRED,   NONE,       REQUIRED,  NO_LABEL  },
-    { "SUBC",   OPCODE_SUBC, false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
-    { "NOT",    OPCODE_NOT,  false,          REQUIRED,   NONE,       NONE,      NO_LABEL  },
-    { "AND",    OPCODE_AND,  false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
-    { "OR",     OPCODE_OR,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL  },
-    { "SRA",    OPCODE_SRA,  false,          REQUIRED,   NONE,       REQUIRED,  NO_LABEL  },
-    { "RRC",    OPCODE_RRC,  false,          REQUIRED,   NONE,       REQUIRED,  NO_LABEL  }
-    // { "IN",       0x0E,   false,          REQUIRED,   REQUIRED,   REQUIRED,  NO_LABEL  },
-    // { "OUT",      0x0F,   false,          REQUIRED,   REQUIRED,   REQUIRED,  NO_LABEL  },
+    // Opcode        code    // ExtraLong     R1          R2            Value   Label     N/A
+    { "LD",     OPCODE_LD,   true,           REQUIRED,   REQUIRED,   REQUIRED,  NO_LABEL,  false },
+    { "ST",     OPCODE_ST,   true,           REQUIRED,   REQUIRED,   REQUIRED,  NO_LABEL,  false },
+    { "CPY",    OPCODE_COPY, false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL,  false },
+    { "SWAP",   OPCODE_SWAP, false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL,  false },
+    { "JMP",    OPCODE_JMP,  true,           REQUIRED,   NONE,       NONE,      HAS_LABEL, false },
+    { "ADD",    OPCODE_ADD,  false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL,  false },
+    { "SUB",    OPCODE_SUB,  false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL,  false },
+    { "ADDC",   OPCODE_ADDC, false,          REQUIRED,   NONE,       REQUIRED,  NO_LABEL,  false },
+    { "SUBC",   OPCODE_SUBC, false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL,  false },
+    { "NOT",    OPCODE_NOT,  false,          REQUIRED,   NONE,       NONE,      NO_LABEL,  false },
+    { "AND",    OPCODE_AND,  false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL,  false },
+    { "OR",     OPCODE_OR,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL,  false },
+    { "SRA",    OPCODE_SRA,  false,          REQUIRED,   NONE,       REQUIRED,  NO_LABEL,  false },
+    { "RRC",    OPCODE_RRC,  false,          REQUIRED,   NONE,       REQUIRED,  NO_LABEL,  false }
 };
 
 // FUNCTION DECLARATIONS
@@ -101,6 +118,10 @@ bool LookupOperation (const std::string &token, Operation &opcodeRule);
 // Parse the token for a register value  'R#'
 // Return true if value filled in
 bool ParseRegister(const std::string &token, int &value);
+
+// Parse the token for a Conditional 'C0/1, N0/1, V0/1, Z0/1'
+// Return true if value filled in
+bool ParseCondition(const std::string &token, int &value);
 
 // Parse the token for a  value  '#'
 // Return true if value filled in
@@ -247,22 +268,30 @@ bool ParseOperation(const std::string &line, Operation &operation) {
    }
    std::string label;
    Operation opcodeRule;
+   bool labelDestination{};
    if (!LookupOperation(token, opcodeRule)) {
        std::cout << "\tLABEL " << token;
        label = token;
+       labelDestination = true; // we can jump to this label
        s = Token(s, token);
        if (!LookupOperation(token, opcodeRule)) {
           std::cout << "ERROR FINDING OPCODE TABLE ENTRY FOR: " << token << std::endl;
           return false;
        }
+       
    }
    operation = opcodeRule;
    operation.label = label;
+   operation.labelDestination = labelDestination;
    // Now we have the table entry
    // Parse the REGISTERS, VALUES, LABELS
    if (opcodeRule.reg1 == REQUIRED) {
       s = Token(s, token);
-      if (ParseRegister(token, operation.reg1)) {
+      printf ("REG=%s\n", s.c_str());
+      if (ParseCondition(token, operation.reg1)) {
+        std::cout << "\tCNVZ[" << operation.reg1 << "]";
+      }
+      else if (ParseRegister(token, operation.reg1)) {
         std::cout << "\tREG1 R" << operation.reg1;
       } else {
         return false;
@@ -333,6 +362,19 @@ bool ParseRegister(const std::string &token, int &value) {
         return ParseNumeric(reg, value);
     }
     std::cerr << std::endl << "SYNTAX ERROR: Register malformed " <<  token << std::endl;
+    return false;
+}
+
+//*************************************************************************************************
+bool ParseCondition(const std::string &token, int &value) {
+    printf ("token=%s\n", token.c_str());
+    for (const auto &entry : CONDITION_LIST) {
+        if (entry.code == token) {
+            value = entry.value;
+            printf ("code=%s value=%04X\n", entry.code.c_str(), value );
+            return true;
+        }
+    }
     return false;
 }
 
@@ -429,6 +471,9 @@ bool GenerateAssembly (const std::string &fileName, const Program &program) {
             case OPCODE_JMP:
                 // These operations are OPCODE LABEL
                 instr = (record.operation.code & opcodeMask) << 10;
+                printf ("JUMP on Condition %04X\n", record.operation.reg1);
+                instr |= (record.operation.reg1 & 0xFFFF);
+                printf ("%04X\n", instr);
                 bits = instr;
                 outputFile << ToString(addr) << " : " << bits << ";  %" << record.inputLine << "; %" << std::endl;
                 addr++;
@@ -481,16 +526,15 @@ std::string ToString( uint16_t addr )
 }
 
 //*************************************************************************************************
-bool GetJumpOffset( const Program &program, const std::string &label, uint16_t fromAddr, uint16_t &offset )
+bool GetJumpOffset( const Program &program, const std::string &label, uint16_t fromAddr, uint16_t &toAddr )
 {
     bool success{false};
-    uint16_t toAddr;
     for (const auto record : program) {
-        if (label == record.operation.label && record.addr != fromAddr) {
+        if (label == record.operation.label && record.operation.labelDestination) {
             toAddr = record.addr;
-            offset = record.addr - fromAddr;
-            printf ("JUMP %s FROM %04X TO %04X OFFSET=%04X\n", label.c_str(), fromAddr, record.addr, offset);
+            printf ("JUMP %s FROM %04X TO %04X\n", label.c_str(), fromAddr, toAddr);
             success = true;
+            break;
         }
     }
     return success;
