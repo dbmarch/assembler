@@ -1,7 +1,5 @@
-; 	Read in 16 switch settings into array.   
-;   each time you read in we display the LED
-;   After all are read in we  output all leds in sequence.
-;   Output 16 array to LEDS with small delay
+; 	Store 4 values into memory   
+;   Press button, display the next value on leds
 ;------------------------------------------------------------------------------
 ;	Code segment:
 ;------------------------------------------------------------------------------
