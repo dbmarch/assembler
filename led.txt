@@ -1,0 +1,13 @@
+; 	Read in switch and output leds in a tight loop
+;------------------------------------------------------------------------------
+;	Code segment:
+;------------------------------------------------------------------------------
+    .code;
+; Load in the arrays 
+
+@Loop1    IN R0;            READ in R0
+
+ ; Output ARRAY 2 to the LEDs
+    OUT R0;                 Write to the leds
+    JMP U0, @Loop1;         Loop forever
+    .endcode;
