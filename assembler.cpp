@@ -63,7 +63,7 @@ enum Opcode {
 const ConditionList CONDITION_LIST = {
   {"C1", 0x8},      // 1000b    Carry
   {"N1", 0x4},      // 0100b    Negative
-  {"V1", 0x2},      // 0010b    
+  {"V1", 0x2},      // 0010b    Overflow
   {"Z1", 0x1},      // 0001b    Zero bit set
   {"C0", 0x7},      // 0111b
   {"N0", 0xB},      // 1011b

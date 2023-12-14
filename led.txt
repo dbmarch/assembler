@@ -6,6 +6,7 @@
 ; Load in the arrays 
 
 @Loop1    IN R0;            READ in R0
+  ADDC R0, 0x1;
 
  ; Output ARRAY 2 to the LEDs
     OUT R0;                 Write to the leds

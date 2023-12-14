@@ -1,4 +1,6 @@
 ; 	Read in 16 switch settings into array.   
+;   each time you read in we display the LED
+;   After all are read in we  output all leds in sequence.
 ;   Output 16 array to LEDS with small delay
 ;------------------------------------------------------------------------------
 ;	Code segment:
@@ -15,17 +17,18 @@
 
     ; Wait for PB to be a 1
 @LOOP1  IN R5;      READ in R5
-    RRC R5;
+    RRC R5, 0x01;
+    OUT R5;
     JMP C0 @LOOP1
 
 ; PB is a 1
 @LOOP2  IN R5;      READ in R5
-    RRC R5;
+    RRC R5, 0x01;
     JMP C1 @LOOP1
 
 ; PB is a 0  - Save the array
     ST  R5, M[R0, 0x0];
-    
+    OUT R5;                         OUTPUT to lED for debug
     ADDC R0, 0x1;                   R0++
     SUBC R6, 0x1;                   R6--
     JMP Z0, @LOOP1;                 Go back and read more switches.
