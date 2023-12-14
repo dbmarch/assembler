@@ -18,6 +18,8 @@
     SUB R6, R6;                 R6 = 0   This will track how many elements we read in.
     ADDC R6, 0x20;              R6 = 32   This will load in 32 values  Array 1, Array 2.
 ; Load in the arrays 
+    SUB R8, R8;                 R8 is the indicator light.
+    ADDC R8, 0x10;
 
     ; Wait for PB to be a 1
 @LOOP1  IN R5;      READ in R5
@@ -27,15 +29,17 @@
 ; PB is a 1
 @LOOP2  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C1 @LOOP1
+    JMP C1 @LOOP2
 
 ; PB is a 0  - Save the array
     ST  R5, M[R0, 0x0];
-    
+    OR  R5, R8;
+    OUT R5;                         OUTPUT LEDS to show progress.
+
     ADDC R0, 0x1;                   R0++
     SUBC R6, 0x1;                   R6--
     JMP Z0, @LOOP1;                 Go back and read more switches.
-
+fs
 ;  ALL 16 elements are read in.
 
 

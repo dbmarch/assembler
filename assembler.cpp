@@ -482,8 +482,8 @@ bool GenerateAssembly (const std::string &fileName, const Program &program) {
             case OPCODE_ST:
                 // These operations are OPCODE REG1 REG2 , VALUE
                 instr = (record.operation.code & opcodeMask) << 10;
-                instr |= (record.operation.reg1 & regMask) << 5;
-                instr |= (record.operation.reg2 & regMask);
+                instr |= (record.operation.reg2 & regMask) << 5;
+                instr |= (record.operation.reg1 & regMask);
                 bits = instr;
                 outputFile << ToString(addr) << " : " << bits << ";  % " << record.inputLine << "; %" << std::endl;
                 addr++;

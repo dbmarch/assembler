@@ -12,6 +12,8 @@
     SUB R6, R6;                 R6 = 0   This will track how many elements we read in.
     ADDC R6, 0x20;              R6 = 32   This will load in 32 values  Array 1, Array 2.
 ; Load in the arrays 
+    SUB R8, R8;
+    ADDC R8, 0x10;
 
     ; Wait for PB to be a 1
 @LOOP1  IN R5;      READ in R5
@@ -21,10 +23,11 @@
 ; PB is a 1
 @LOOP2  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C1 @LOOP1
+    JMP C1 @LOOP2
 
 ; PB is a 0  - Save the array
     ST  R5, M[R0, 0x0];
+    OR  R5, R8;
     OUT R5;                         OUTPUT LEDS to show progress.
     
     ADDC R0, 0x1;                   R0++
@@ -33,26 +36,28 @@
 
 ;  ALL 16 elements are read in.
 
-
- ; Output ARRAY 2 to the LEDs
+    ; Loop through the array
+    ; Output ARRAY 1 to the LEDs
+    SUB R0, R0;                     R0 = 0
     SUB R6, R6;                     R6 = 0
     ADDC R6, 0x10;                  R6 = 16
-    SUB R0, R0;                     R0 = 0
-LOOP2 LD R5, M[R0, 0x10];            R5 = M[R0+0x10]
+
+; Wait for PB to be a 1
+@LOOP3  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @LOOP3
+
+; PB is a 1
+@LOOP4  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @LOOP4
+
+    LD R5, M[R0, 0x10];              R5 = M[R0+0]
     OUT R5;                         OUT R5
-    
-    ;; SOME DELAY
-    SUB R7, R7
-    ADDC R7, 0x1F
-@DELAY AND R7, R7;                  NOOP
-    AND R7, R7;                     NOOP
-    AND R7, R7;                     NOOP
-    SUBC R7, 0x1;
-    JMP Z0, @DELAY
-    
+
     ADDC R0, 0x01;                  R0++
     SUBC R6, 0x01;                  R6--
-    JMP Z0, @LOOP2
+    JMP Z0, @LOOP3
 
 ; ALL 16 output to LED
     .endcode;
