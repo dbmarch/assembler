@@ -84,7 +84,7 @@ const OperationList OPCODE_LIST = {
     { "ADD",    OPCODE_ADD,  false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL,  false },
     { "SUB",    OPCODE_SUB,  false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL,  false },
     { "ADDC",   OPCODE_ADDC, false,          REQUIRED,   NONE,       REQUIRED,  NO_LABEL,  false },
-    { "SUBC",   OPCODE_SUBC, false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL,  false },
+    { "SUBC",   OPCODE_SUBC, false,          REQUIRED,   NONE,       REQUIRED,  NO_LABEL,  false },
     { "NOT",    OPCODE_NOT,  false,          REQUIRED,   NONE,       NONE,      NO_LABEL,  false },
     { "AND",    OPCODE_AND,  false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL,  false },
     { "OR",     OPCODE_OR,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL,  false },
@@ -147,6 +147,15 @@ int main(int argc, char** argv) {
     bool success{true};
     std::string fileName{"dxp_dcs.txt"};
     std::string outputFile{"dxp_dcs.mif"};
+    if (argc > 1) {
+        fileName = argv[1];
+        std::string::size_type pos = fileName.find(".");
+        fileName = fileName.substr(0, pos);
+        outputFile = fileName + ".mif";
+        fileName += ".txt";
+    }
+    std::cout << "Input File: " << fileName << std::endl;
+    std::cout << "Output File: " << outputFile << std::endl;
     FileVector fileVector = ParseFile(fileName);
 
     Program program;
@@ -206,10 +215,10 @@ FileVector ParseFile (std::string &fileName, bool useCodeTags) {
                     std::cout << "Processing... [.endcode]" << std::endl;
                     codeBlock = false;
                 } else {
-                    std::string cleanLine{TrimInput(currentLine)};
-                    if (cleanLine.length()) {
-                        fileVector.push_back(cleanLine);
-                    }
+                        std::string cleanLine{TrimInput(currentLine)};
+                        if (cleanLine.length()) {
+                            fileVector.push_back(cleanLine);
+                        }
                 }
             }
             else if (currentLine.find(codeStart) != std::string::npos) {
@@ -235,8 +244,16 @@ std::string TrimInput(const std::string &input) {
     std::string::size_type start = input.find_first_not_of(whitespace);
     std::string::size_type end = input.find_first_of(endLine);  // Returns npos if not found
     // substring 2nd arg is length.   It will take all chars to end if npos.
-    
-    std::string trimString = input.substr(start, end == std::string::npos ? end : end-start); 
+    std::string trimString{input};
+    if (start == std::string::npos) {
+        return "";
+    }
+    try {
+        trimString = input.substr(start, end == std::string::npos ? end : end-start);
+    } catch(...) {
+        std::cout << "TrimInput ERROR '" << input << ";" << std::endl;
+    }
+
     return trimString;
 }
 
