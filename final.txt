@@ -46,12 +46,12 @@
 ; Matrix 4x4 addition
         SUB		R1, R1;						Set R1=0    R1 is index into array
         ADDC	R1, 0x0F;					R1 = 15
-@Loop1	LD		R3, M[R1, 0x0];				R3 = M[R1+0]
+@Loop3	LD		R3, M[R1, 0x0];				R3 = M[R1+0]
         LD		R2, M[R1, 0x10];			R2 = M[R1+16]
         ADDC	R3, R2;						R3 = R3+R2
         ST		R3, M[R1, 0x0];				M[R1+0] = R3
         SUBC	R1, 0x1;					R1-=1
-        JMP		Z0, @Loop1;					Jump to Loop1 when Zero NOT set.
+        JMP		Z0, @Loop3;					Jump to Loop3 when Zero NOT set.
 
 ; Now do the transpose!
 ;From Memory:
@@ -69,7 +69,7 @@
         ;R11=>R11
         SUB		R3, R3;						R3=0        R3 is index into array 1
         SUB     R1, R1;                     R1=0        R1 is index into array 2
-@Loop2  LD		R2, M[R3, 0x0];				R2 = M[R3+0]
+@Loop4  LD		R2, M[R3, 0x0];				R2 = M[R3+0]
         ST		R2, M[R1, 0x10];			M[R1+16] = R2
 
         ;R12=>R21
@@ -95,18 +95,43 @@
         ADD     R3, R4;                     R3 = R4
         ADDC    R1, 0x1;                    R1++
         SUBC    R5, 0x1;                    R5--
-        JMP		Z0, @Loop2;					Jump to Loop2 when Zero NOT set.
+        JMP		Z0, @Loop4;					Jump to Loop2 when Zero NOT set.
 
 ; Output ARRAY 2 to the LEDs
+
+    SUB R5, R5;
+    ADDC R5, 0x1F;
+    OUT R5;
+
+    ; Wait for PB to be a 1
+@LOOP5  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @LOOP5
+
+; PB is a 1
+@LOOP6  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @LOOP6
+
     SUB R6, R6;                     R6 = 0
     ADDC R6, 0x10;                  R6 = 16
     SUB R1, R1;                     R1 = 0
-LOOP2 LD R5, M[R1, 0x10];            R5 = M[R1+0x10]
+@LOOP7 LD R5, M[R1, 0x10];            R5 = M[R1+0x10]
     OUT R5;                         OUT R5
-    
+
+    ; Wait for PB to be a 1
+@LOOP8  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @LOOP8
+
+; PB is a 1
+@LOOP9  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @LOOP9
+
     ADDC R1, 0x01;                  R1++
     SUBC R6, 0x01;                  R6--
-    JMP Z0, @LOOP2
+    JMP Z0, @LOOP7
 
 ; ALL 16 output to LED
     .endcode;
