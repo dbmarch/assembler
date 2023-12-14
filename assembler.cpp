@@ -56,16 +56,19 @@ enum Opcode {
     OPCODE_OR   = 0x0B,
     OPCODE_SRA  = 0x0C,
     OPCODE_RRC  = 0x0D,
+    OPCODE_IN   = 0x0E,
+    OPCODE_OUT  = 0x0F,
+
 };
 const ConditionList CONDITION_LIST = {
-  {"C1", 0x8},      // 1000b
-  {"N1", 0x4},      // 0100b
-  {"V1", 0x2},      // 0010b
-  {"Z1", 0x1},      // 0001b
+  {"C1", 0x8},      // 1000b    Carry
+  {"N1", 0x4},      // 0100b    Negative
+  {"V1", 0x2},      // 0010b    
+  {"Z1", 0x1},      // 0001b    Zero bit set
   {"C0", 0x7},      // 0111b
   {"N0", 0xB},      // 1011b
   {"V0", 0xD},      // 1101b
-  {"Z0", 0xE},      // 1110b
+  {"Z0", 0xE},      // 1110b    zero bit not set
   {"U0", 0x0}       // 0000b    // Unconditional jump 
 };
 
@@ -86,7 +89,9 @@ const OperationList OPCODE_LIST = {
     { "AND",    OPCODE_AND,  false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL,  false },
     { "OR",     OPCODE_OR,   false,          REQUIRED,   REQUIRED,   NONE,      NO_LABEL,  false },
     { "SRA",    OPCODE_SRA,  false,          REQUIRED,   NONE,       REQUIRED,  NO_LABEL,  false },
-    { "RRC",    OPCODE_RRC,  false,          REQUIRED,   NONE,       REQUIRED,  NO_LABEL,  false }
+    { "RRC",    OPCODE_RRC,  false,          REQUIRED,   NONE,       REQUIRED,  NO_LABEL,  false },
+    { "IN",     OPCODE_IN,   false,          REQUIRED,   NONE,       NONE,      NO_LABEL,  false },
+    { "OUT",    OPCODE_OUT,  false,          REQUIRED,   NONE,       NONE,      NO_LABEL,  false },
 };
 
 // FUNCTION DECLARATIONS
@@ -500,6 +505,8 @@ bool GenerateAssembly (const std::string &fileName, const Program &program) {
                 break;
     
             case OPCODE_NOT:
+            case OPCODE_IN:
+            case OPCODE_OUT:
                 // These operations are OPCODE REG1
                 instr = (record.operation.code & opcodeMask) << 10;
                 instr |= (record.operation.reg1 & regMask) << 5;

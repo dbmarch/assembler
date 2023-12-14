@@ -1,59 +1,60 @@
 ; 	dxp's second assembly test program.
 ;------------------------------------------------------------------------------
-;	Assembler directives:
-;------------------------------------------------------------------------------
-;
-;
-;
-	.directives;
-	;
-	.equ	constOne	0x1;
-	.equ	constTwo	0x2;
-	;
-	.enddirectives;
-;------------------------------------------------------------------------------
-;	Constant segment:
-;------------------------------------------------------------------------------
-; These values are initialized in the locations at the end of the code segment.
-; For now, .word is the only constant initialization assembly directive.
-; After assembling the code, during the final run, the constant name is 
-;   replaced with its location address in the program memory.
-	.constants;
-;
-	.word	firstConstWord	0xFFFF;
-	;
-	.endconstants;
+; ARRAY 1    0...15
+; ARRAY 2    16..31
+; Add the Arrays:    ARRAY1= ARRAY1+ARRAY2
+; Transpose Array:   ARRAY2= Transpose(ARRAY1)
 ;------------------------------------------------------------------------------
 ;	Code segment:
 ;------------------------------------------------------------------------------
-	.code;
-		SUB		R2, R2;
-		SUB 	R3, R3;
-		ADDC 	R2, 0x3;
-		ADDC 	R2, 0x2;
-@Label3 	ADD R3, R2;
-		NOT 	R2;
-		OR 		R3, R2;
-		AND 	R3, R2;
-		SRA 	R3, 0x1;
-@Label1	  RRC R2, 0x1;
-		JMP 	C0, @Label1;
-		SWAP 	R3, R2;
-		ST 		R3, M[R0, 0x55];
-		CPY 	R3, R2;
-	  JMP   C1, @Label2;
-		LD 		R3, M[R0, 0x55];
-@Label2		LD 		R1, M[R0, 0xFF];
-		NOT 	R1;
-		
-		
-		ST 		R1, M[R0, 0xFF];
-		JMP 	C0, @Label1;
-		JMP   N1, @Label3;
-		JMP   N0, @Label1;
-		JMP   V1, @Label3;
-		JMP   V0, @Label2;
-		JMP   Z1, @Label3;
-		JMP   Z0, @Label1;
-		JMP 	U0, @Label1;
-	.endcode;
+    .code;
+        SUB		R0, R0;						Set R0=0    R0 is index into array
+        ADDC	R0, 0x0F;					R0 = 15
+@Loop1	LD		R1, M[R0, 0x0];				R1 = M[R0+0]
+        LD		R2, M[R0, 0x10];			R2 = M[R0+16]
+        ADDC	R1, R2;						R1 = R1+R2
+        ST		R1, M[R0, 0x0];				M[R0+0] = R1
+        SUBC	R0, 0x1;					R0-=1
+        JMP		Z0, @Loop1;					Jump to Loop1 when Zero NOT set.
+; Now do the transpose!
+;From Memory:
+;	0	1	2	3	4	5	6	7	8	9	10	11	12	13	14	15
+;	R11	R12	R13	R14	R21	R22	R23	R24	R31	R32	R33	R34	R41	R42	R43	R44
+;To Memory:
+;	R11	R21	R31	R41	R12	R22	R32	R42	R13	R23	R33	R43	R14	R24	R34	R44
+;	0	4	8	12	1	5	9	13	2	6	10	14	3	7	11	15
+        
+        ; Loop 4 times
+        SUB R3, R3;                         R3= 0
+        ADDC    R3, #4;                     R3=4        Loop 4 times
+        ;R11=>R11
+        SUB		R0, R0;						R0=0        R0 is index into array 1
+        SUB     R1, R1;                     R1=0        R1 is index into array 2
+@Loop2  LD		R2, M[R0, 0x0];				R2 = M[R0+0]
+        ST		R2, M[R1, 0x10];			M[R1+16] = R2
+
+        ;R12=>R21
+        ADDC    R0, 0x4;                    R0+=4
+        ADDC    R1, 0x1;                    R1++
+        LD		R2, M[R0, 0x0];				R2 = M[R0+0]
+        ST		R2, M[R1, 0x10];			M[R1+16] = R2
+
+        ;R13=>R31
+        ADDC    R0, 0x4;                    R0+=4
+        ADDC    R1, 0x1;                    R1++
+        LD		R2, M[R0, 0x0];				R2 = M[R0+0]
+        ST		R2, M[R1, 0x10];			M[R1+16] = R2
+
+        ;R14=>R41
+        ADDC    R0, 0x4;                    R0+=4
+        ADDC    R1, 0x1;                     R1=12
+        LD		R2, M[R0, 0x0];				R2 = M[R0+0]
+        ST		R2, M[R1, 0x10];			M[R1+16] = R2
+
+        SUB     R0, R0;                     R0=0-
+        ADDC    R0, 0x1;                    R0++
+        ADDC    R1, 0x1;                    R1++
+        SUBC    R3, 0x1;                    R3--
+        JMP		Z0, @Loop2;					Jump to Loop2 when Zero NOT set.
+
+    .endcode;
