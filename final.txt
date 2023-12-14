@@ -13,7 +13,7 @@
 ;------------------------------------------------------------------------------
     .code;
 ; Load in the arrays 
-    SUB R0, R0;                 R0 = 0   This will be index into array.
+    SUB R1, R1;                 R1 = 0   This will be index into array.
     SUB R6, R6;                 R6 = 0   This will track how many elements we read in.
     SUB R6, R6;                 R6 = 0   This will track how many elements we read in.
     ADDC R6, 0x20;              R6 = 32   This will load in 32 values  Array 1, Array 2.
@@ -32,25 +32,25 @@
     JMP C1 @LOOP2
 
 ; PB is a 0  - Save the array
-    ST  R5, M[R0, 0x0];
+    ST  R5, M[R1, 0x0];
     OR  R5, R8;
     OUT R5;                         OUTPUT LEDS to show progress.
 
-    ADDC R0, 0x1;                   R0++
+    ADDC R1, 0x1;                   R1++
     SUBC R6, 0x1;                   R6--
     JMP Z0, @LOOP1;                 Go back and read more switches.
-fs
+
 ;  ALL 16 elements are read in.
 
 
 ; Matrix 4x4 addition
-        SUB		R0, R0;						Set R0=0    R0 is index into array
-        ADDC	R0, 0x0F;					R0 = 15
-@Loop1	LD		R1, M[R0, 0x0];				R1 = M[R0+0]
-        LD		R2, M[R0, 0x10];			R2 = M[R0+16]
-        ADDC	R1, R2;						R1 = R1+R2
-        ST		R1, M[R0, 0x0];				M[R0+0] = R1
-        SUBC	R0, 0x1;					R0-=1
+        SUB		R1, R1;						Set R1=0    R1 is index into array
+        ADDC	R1, 0x0F;					R1 = 15
+@Loop1	LD		R3, M[R1, 0x0];				R3 = M[R1+0]
+        LD		R2, M[R1, 0x10];			R2 = M[R1+16]
+        ADDC	R3, R2;						R3 = R3+R2
+        ST		R3, M[R1, 0x0];				M[R1+0] = R3
+        SUBC	R1, 0x1;					R1-=1
         JMP		Z0, @Loop1;					Jump to Loop1 when Zero NOT set.
 
 ; Now do the transpose!
@@ -64,56 +64,47 @@ fs
         
         ; Loop 4 times
         SUB R4, R4;                         R4=0
-        SUB R3, R3;                         R3=0        R3 is the overall loop counter
-        ADDC    R3, #4;                     R3=4        Loop 4 times
+        SUB R5, R5;                         R5=0        R5 is the overall loop counter
+        ADDC    R5, #4;                     R5=4        Loop 4 times
         ;R11=>R11
-        SUB		R0, R0;						R0=0        R0 is index into array 1
+        SUB		R3, R3;						R3=0        R3 is index into array 1
         SUB     R1, R1;                     R1=0        R1 is index into array 2
-@Loop2  LD		R2, M[R0, 0x0];				R2 = M[R0+0]
+@Loop2  LD		R2, M[R3, 0x0];				R2 = M[R3+0]
         ST		R2, M[R1, 0x10];			M[R1+16] = R2
 
         ;R12=>R21
-        ADDC    R0, 0x4;                    R0+=4
+        ADDC    R3, 0x4;                    R0+=4
         ADDC    R1, 0x1;                    R1++
-        LD		R2, M[R0, 0x0];				R2 = M[R0+0]
+        LD		R2, M[R3, 0x0];				R2 = M[R3+0]
         ST		R2, M[R1, 0x10];			M[R1+16] = R2
 
         ;R13=>R31
-        ADDC    R0, 0x4;                    R0+=4
+        ADDC    R3, 0x4;                    R3+=4
         ADDC    R1, 0x1;                    R1++
-        LD		R2, M[R0, 0x0];				R2 = M[R0+0]
+        LD		R2, M[R3, 0x0];				R2 = M[R3+0]
         ST		R2, M[R1, 0x10];			M[R1+16] = R2
 
         ;R14=>R41
-        ADDC    R0, 0x4;                    R0+=4
+        ADDC    R3, 0x4;                    R3+=4
         ADDC    R1, 0x1;                    R1=12
-        LD		R2, M[R0, 0x0];				R2 = M[R0+0]
+        LD		R2, M[R3, 0x0];				R2 = M[R3+0]
         ST		R2, M[R1, 0x10];			M[R1+16] = R2
 
-        SUB     R0, R0;                     R0=0-
+        SUB     R3, R3;                     R3=0-
         ADDC    R4, 0x1;                    R4++ is the index we start next
-        ADD     R0, R4;                     R0 = R4
+        ADD     R3, R4;                     R3 = R4
         ADDC    R1, 0x1;                    R1++
-        SUBC    R3, 0x1;                    R3--
+        SUBC    R5, 0x1;                    R5--
         JMP		Z0, @Loop2;					Jump to Loop2 when Zero NOT set.
 
 ; Output ARRAY 2 to the LEDs
     SUB R6, R6;                     R6 = 0
     ADDC R6, 0x10;                  R6 = 16
-    SUB R0, R0;                     R0 = 0
-LOOP2 LD R5, M[R0, 0x10];            R5 = M[R0+0x10]
+    SUB R1, R1;                     R1 = 0
+LOOP2 LD R5, M[R1, 0x10];            R5 = M[R1+0x10]
     OUT R5;                         OUT R5
     
-    ;; SOME DELAY
-    SUB R7, R7
-    ADDC R7, 0x1F
-@DELAY AND R7, R7;                  NOOP
-    AND R7, R7;                     NOOP
-    AND R7, R7;                     NOOP
-    SUBC R7, 0x1;
-    JMP Z0, @DELAY
-    
-    ADDC R0, 0x01;                  R0++
+    ADDC R1, 0x01;                  R1++
     SUBC R6, 0x01;                  R6--
     JMP Z0, @LOOP2
 

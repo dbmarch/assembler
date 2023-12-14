@@ -7,47 +7,42 @@
 ; ARRAY 2    16..31
 ;------------------------------------------------------------------------------
     .code;
-@AGAIN  SUB R0, R0;                 R0 = 0   This will be index into array.
+    SUB R1, R1;                 R1 = 0   This will be index into array.
     SUB R5, R5;
-    ADDC R5, 0x01;
-    ST  R5, M[R0, 0x0];
-    ADDC R0, 0x01;
-    ADDC R5, 0x01;
-    ST  R5, M[R0, 0x0];
-    ADDC R0, 0x01;
-    ADDC R5, 0x01;
-    ST  R5, M[R0, 0x0];
-    ADDC R0, 0x01;
-    ADDC R5, 0x01;
-    ST  R5, M[R0, 0x0];
+    ADDC R5, 0x8;
+    ST  R5, M[R1, 0x0];
 
-    SUB R0, R0;                 R0 = 0   This will be index into array.
-    SUB R6, R6;                 R6 = 0   This will track how many elements we read in.
-    ADDC R6, 0x4;               R6 = 16  4 values
-; Load in the arrays 
-    SUB R8, R8;
-    ADDC R8, 0x10;
+    RRC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+    
+    RRC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
 
-    ; Wait for PB to be a 1
-@LOOP1  IN R5;      READ in R5
-    RRC R5, 0x01;
-    JMP C0 @LOOP1
+    RRC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
 
-; PB is a 1
-@LOOP2  IN R5;      READ in R5
-    RRC R5, 0x01;
-    JMP C1 @LOOP2
+    SUB R5, R5;
+    ADDC R5, 0x10;
+    OUT R5;
 
 ; PB is a 0  - Load the array
-    LD  R5, M[R0, 0x0];
-    OR  R5, R8;
+    SUB R1, R1
+    LD  R5, M[R1, 0x0];
     OUT R5;
-    
-    ADDC R0, 0x1;                   R0++
-    SUBC R6, 0x1;                   R6--
-    JMP Z0, @LOOP1;                 Go back and read more switches.
 
-;  ALL  elements are read in.
-   JMP U0, @AGAIN
+    ADDC R1, 0x1;
+    LD  R5, M[R1, 0x0];
+    OUT R5;
 
+    ADDC R1, 0x1;
+    LD  R5, M[R1, 0x0];
+    OUT R5;
+ 
+    ADDC R1, 0x1;
+    LD  R5, M[R1, 0x0];
+    OUT R5;
+ 
     .endcode;

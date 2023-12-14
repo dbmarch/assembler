@@ -1,0 +1,56 @@
+; 	Complete program
+;   Read in 2 arrays of 16 elements  (array 1, array 2)
+;   output array 2
+;------------------------------------------------------------------------------
+; ARRAY 1    0...15
+; ARRAY 2    16..31
+; Add the Arrays:    ARRAY1= ARRAY1+ARRAY2
+; Transpose Array:   ARRAY2= Transpose(ARRAY1)
+;------------------------------------------------------------------------------
+;	Code segment:
+;------------------------------------------------------------------------------
+    .code;
+; Load in the arrays 
+    SUB R1, R1;                 R1 = 0   This will be index into array.
+    SUB R6, R6;                 R6 = 0   This will track how many elements we read in.
+    SUB R6, R6;                 R6 = 0   This will track how many elements we read in.
+    ADDC R6, 0x20;              R6 = 32   This will load in 32 values  Array 1, Array 2.
+; Load in the arrays 
+    SUB R8, R8;                 R8 is the indicator light.
+    ADDC R8, 0x10;
+
+    ; Wait for PB to be a 1
+@LOOP1  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @LOOP1
+
+; PB is a 1
+@LOOP2  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @LOOP2
+
+; PB is a 0  - Save the array
+    ST  R5, M[R1, 0x0];
+    OR  R5, R8;
+    OUT R5;                         OUTPUT LEDS to show progress.
+
+    ADDC R1, 0x1;                   R1++
+    SUBC R6, 0x1;                   R6--
+    JMP Z0, @LOOP1;                 Go back and read more switches.
+
+;  ALL 16 elements are read in.
+
+
+; Output ARRAY 2 to the LEDs
+    SUB R6, R6;                     R6 = 0
+    ADDC R6, 0x10;                  R6 = 16
+    SUB R1, R1;                     R1 = 0
+LOOP2 LD R5, M[R1, 0x10];            R5 = M[R1+0x10]
+    OUT R5;                         OUT R5
+    
+    ADDC R1, 0x01;                  R1++
+    SUBC R6, 0x01;                  R6--
+    JMP Z0, @LOOP2
+
+; ALL 16 output to LED
+    .endcode;
