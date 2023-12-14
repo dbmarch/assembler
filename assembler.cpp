@@ -434,10 +434,11 @@ bool GenerateAssembly (const std::string &fileName, const Program &program) {
 
     outputFile << "--Program Memory Initialization File" << std::endl;
     outputFile << "WIDTH = 14;" << std::endl;
+    outputFile << "DEPTH = 1024;" << std::endl;
     outputFile << "ADDRESS_RADIX = HEX;" << std::endl;
     outputFile << "DATA_RADIX = BIN;"<< std::endl;
     outputFile << std::endl << "CONTENT BEGIN" << std::endl <<  std::endl;
-    outputFile << "<Ad> : <OC><Ri-><Rj->" << std::endl;
+    // outputFile << "<Ad> : <OC><Ri-><Rj->" << std::endl;
     int addr{0};
     for ( const auto record : program) {
         constexpr int opcodeMask{0xF};
@@ -516,8 +517,8 @@ bool GenerateAssembly (const std::string &fileName, const Program &program) {
                 break;
         }
     }
-    outputFile << "[ " << ToString(addr) << " .. " << ToString(depth-1) << " ] : 00000000; % Fill the remaining locations" << std::endl;
-    outputFile << "END;" << std::endl;
+    outputFile << "[ " << ToString(addr) << " .. " << ToString(depth-1) << " ] : 0;" << std::endl;
+    outputFile << "END;";
     outputFile.close();
     return true;
 }
