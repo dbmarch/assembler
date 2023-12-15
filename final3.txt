@@ -134,7 +134,7 @@
     LD R3, M[R0, 0x7];
     LD R2, M[R0, 0x17];
     ADD R3, R2;
-    SWAP R13, R3;
+    SWAP R23, R3;
 
 ;8
     LD R3, M[R0, 0x8];
