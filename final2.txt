@@ -69,6 +69,15 @@
     ADDC R5, 0x1F;
     OUT R5;
 
+@ALLDATA2  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @ALLDATA2
+
+; PB is a 1
+@ALLDATA3  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @ALLDATA3
+
 ; Matrix addition with transpose
 ; From 
 ;	0	1	2	3	4	5	6	7	8	9	10	11	12	13	14	15
