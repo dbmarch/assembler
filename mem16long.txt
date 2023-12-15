@@ -1,0 +1,279 @@
+; 	Store 16 values into memory   
+;   Press button, display the next value on leds
+;------------------------------------------------------------------------------
+;	Code segment:
+;------------------------------------------------------------------------------
+; ARRAY 1    0...15
+;------------------------------------------------------------------------------
+    .code;
+    ; M[0] = 1
+    SUB R0, R0;
+    SUB R1, R1;                 R1 = 0   This will be index into array.
+    SUB R5, R5;
+    ADDC R5, 0x1;
+    ST  R5, M[R1, 0x0];    
+    
+    ; M[1] = 2
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+;    ST  R5, M[R1, 0x0];
+    ST  R5, M[R0, 0x1];
+    
+    ; M[2] = 3
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+;    ST  R5, M[R1, 0x0];
+    ST  R5, M[R0, 0x2];
+
+    ; M[3] = 4
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+;    ST  R5, M[R1, 0x0];
+    ST  R5, M[R0, 0x3];
+
+    ; M[4] = 5
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+;    ST  R5, M[R1, 0x0];
+    ST  R5, M[R0, 0x4];
+
+    ; M[5] = 6
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+;    ST  R5, M[R1, 0x0];
+    ST  R5, M[R0, 0x5];
+
+    ; M[6] = 7
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+;    ST  R5, M[R1, 0x0];
+    ST  R5, M[R0, 0x6];
+
+    ; M[7] = 8
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[8] = 9
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[9] = 10
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[10] = 11
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[11] = 12
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[12] = 13
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[13] = 14
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[14] = 15
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[15] = 16
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[16] = 17
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[17] = 18
+;    ADDC R5, 0x1;
+;    ADDC R1, 0x1;
+;    ST  R5, M[R1, 0x0];
+
+    ; M[18] = 19
+;    ADDC R5, 0x1;
+;    ADDC R1, 0x1;
+;    ST  R5, M[R1, 0x0];
+
+    ; M[19] = 20
+;    ADDC R5, 0x1;
+;    ADDC R1, 0x1;
+;    ST  R5, M[R1, 0x0];
+
+    ; M[20] = 21
+;    ADDC R5, 0x1;
+;    ADDC R1, 0x1;
+;    ST  R5, M[R1, 0x0];
+
+    ; M[21] = 22
+;    ADDC R5, 0x1;
+;    ADDC R1, 0x1;
+;    ST  R5, M[R1, 0x0];
+
+    ; M[22] = 23
+;    ADDC R5, 0x1;
+;    ADDC R1, 0x1;
+;    ST  R5, M[R1, 0x0];
+
+    ; M[23] = 24
+;    ADDC R5, 0x1;
+;    ADDC R1, 0x1;
+;    ST  R5, M[R1, 0x0];
+
+    ; M[24] = 25
+;    ADDC R5, 0x1;
+;    ADDC R1, 0x1;
+;    ST  R5, M[R1, 0x0];
+
+    ; M[25] = 26
+;    ADDC R5, 0x1;
+;    ADDC R1, 0x1;
+;    ST  R5, M[R1, 0x0];
+
+    ; M[26] = 27
+ ;   ADDC R5, 0x1;
+ ;   ADDC R1, 0x1;
+ ;   ST  R5, M[R1, 0x0];
+
+    ; M[27] = 28
+;    ADDC R5, 0x1;
+;    ADDC R1, 0x1;
+;    ST  R5, M[R1, 0x0];
+
+    ; M[28] = 29
+;    ADDC R5, 0x1;
+;    ADDC R1, 0x1;
+;    ST  R5, M[R1, 0x0];
+
+    ; M[29] = 30
+;    ADDC R5, 0x1;
+;    ADDC R1, 0x1;
+;    ST  R5, M[R1, 0x0];
+
+    ; M[30] = 31
+;    ADDC R5, 0x1;
+;    ADDC R1, 0x1;
+;    ST  R5, M[R1, 0x0];
+
+    ; M[31] = 32
+;    ADDC R5, 0x1;
+;    ADDC R1, 0x1;
+;    ST  R5, M[R1, 0x0];
+
+    ; M[32] = 33
+;    ADDC R5, 0x1;
+;    ADDC R1, 0x1;
+;    ST  R5, M[R1, 0x0];
+
+    SUB R1, R1;                     R1 = 0
+ 
+ ;1
+    LD R5, M[R1, 0x0];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ADDC R1, 0x1;
+
+    ; Wait for PB to be a 1
+@PB1  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB1
+
+; PB is a 1
+@PB0  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB0
+
+
+;1
+    LD R5, M[R1, 0x0];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ADDC R1, 0x1;
+
+    ; Wait for PB to be a 1
+@PB11  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB11
+
+; PB is a 1
+@PB01  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB01
+
+;2
+    LD R5, M[R1, 0x0];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ADDC R1, 0x1;
+
+    ; Wait for PB to be a 1
+@PB12  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB12
+
+; PB is a 1
+@PB02  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB02
+
+;3
+    LD R5, M[R1, 0x0];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ADDC R1, 0x1;
+
+    ; Wait for PB to be a 1
+@PB13  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB13
+
+; PB is a 1
+@PB03  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB03
+
+;4
+    LD R5, M[R1, 0x0];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ADDC R1, 0x1;
+    ; Wait for PB to be a 1
+@PB14  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB14
+
+; PB is a 1
+@PB04  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB04
+
+; enable all leds
+; unfortunately we cant load 0xff into a register
+; and we do not have a shift left
+; so we will do it this way
+    SUBC R1, R1;
+    SUBC R2, R2;
+    ADDC R1, 0xF;
+    OR R2, R1;
+    SUBC R1, R1;    
+    ADDC R1, 0x10;
+    OR R2, R1;
+    ADD R1, R1;    0x20
+    OR R2, R1;
+    ADD R1, R1;    0x40
+    OR R2, R1;
+    ADD R1, R1;    0x80
+    OR R2, R1;
+@FOREVER OUT R2;
+    JMP U0 @FOREVER
+
+    .endcode;

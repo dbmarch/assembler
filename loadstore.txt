@@ -14,7 +14,7 @@
     SUB R1, R1;                 R1 = 0   This will be index into array.
     SUB R6, R6;                 R6 = 0   This will track how many elements we read in.
     SUB R6, R6;                 R6 = 0   This will track how many elements we read in.
-    ADDC R6, 0x20;              R6 = 32   This will load in 32 values  Array 1, Array 2.
+    ADDC R6, 0x10;              R6 = 32   This will load in 32 values  Array 1, Array 2.
 ; Load in the arrays 
     SUB R8, R8;                 R8 is the indicator light.
     ADDC R8, 0x10;

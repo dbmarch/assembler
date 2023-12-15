@@ -48,15 +48,21 @@
 
 ; Matrix addition
         SUB R1, R1;         Set R1=0    R1 is index into array
+        SUB R6, R6;         Set R6=0x10 R6 will be index into array 2
+        ADDC R6, 0x10;      Looks like there is a bug using indexing of register and value
         SUB R4, R4;
         ADDC R4, 0x10;      R4 = 16
-@Loop3 LD R3, M[R1, 0x0];   R3 = M[R1+0]
-        LD R2, M[R1, 0x10];  R2 = M[R1+4]
+        SUB R7, R7;
+        ADDC R7, 0x10;      Output array index
+        ADDC R7, 0x10;      Output array index
+@SUM    LD R3, M[R1, 0x0];  R3 = M[R1+0]
+        LD R2, M[R6, 0x0];  R2 = M[R6+0x0]
         ADD R3, R2;         R3 = R3+R2
-        ST R3, M[R1, 0x0];  M[R1+0] = R3
+        ST R3, M[R7, 0x0];  M[R7+0] = R3
         ADDC R1, 0x1;
-        SUBC R4, 0x1;    R1-=1
-        JMP Z0, @Loop3; Jump to Loop3 when Zero NOT set.
+        ADDC R6, 0x1;
+        SUBC R4, 0x1;       R4-=1
+        JMP Z0, @SUM;       Jump to Loop3 when Zero NOT set.
 
 ; Signal we are done inputting by outputting all LEDS
     SUB R5, R5;
@@ -143,8 +149,8 @@
 ; unfortunately we cant load 0xff into a register
 ; and we do not have a shift left
 ; so we will do it this way
-    SUBC R1, R1;
-    SUBC R2, R2;
+    SUB R1, R1;
+    SUB R2, R2;
     ADDC R1, 0xF;
     OR R2, R1;
     SUBC R1, R1;    

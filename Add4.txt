@@ -41,7 +41,7 @@
 
 ;  ALL 4 elements are read in.
 
-; Matrix 4x4 addition
+; Matrix 2x2 addition
         SUB R1, R1;         Set R1=0    R1 is index into array
         SUB R4, R4;         Loop Counter
         ADDC R4, 0x4;       R4 = 4
@@ -91,8 +91,8 @@
     JMP Z0, @LOOP7
 
 ; Enable all leds
-    SUBC R1, R1;
-    SUBC R2, R2;
+    SUB R1, R1;
+    SUB R2, R2;
     ADDC R1, 0xF;
     OR R2, R1;
     SUBC R1, R1;    

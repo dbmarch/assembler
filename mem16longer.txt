@@ -1,0 +1,600 @@
+; 	Store 16 values into memory   
+;   Press button, display the next value on leds
+;------------------------------------------------------------------------------
+;	Code segment:
+;------------------------------------------------------------------------------
+; ARRAY 1    0...15
+;------------------------------------------------------------------------------
+    .code;
+    ; M[0] = 1
+    SUB R0, R0;
+    SUB R1, R1;                 R1 = 0   This will be index into array.
+    SUB R5, R5;
+    ADDC R5, 0x1;
+    ST  R5, M[R1, 0x0];    
+    
+    ; M[1] = 2
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+    
+    ; M[2] = 3
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[3] = 4
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[4] = 5
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[5] = 6
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[6] = 7
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[7] = 8
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[8] = 9
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[9] = 10
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[10] = 11
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[11] = 12
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[12] = 13
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[13] = 14
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[14] = 15
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[15] = 16
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[16] = 17
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[17] = 18
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[18] = 19
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[19] = 20
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[20] = 21
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[21] = 22
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[22] = 23
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[23] = 24
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[24] = 25
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[25] = 26
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[26] = 27
+   ADDC R5, 0x1;
+   ADDC R1, 0x1;
+   ST  R5, M[R1, 0x0];
+
+    ; M[27] = 28
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[28] = 29
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[29] = 30
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[30] = 31
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[31] = 32
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    ; M[32] = 33
+    ADDC R5, 0x1;
+    ADDC R1, 0x1;
+    ST  R5, M[R1, 0x0];
+
+    SUB R1, R1;                     R1 = 0
+ 
+ ;0
+    SUB R0,R0;
+    LD R5, M[R0, 0x0];          R5 = M[R0+0]
+    OUT R5;                         OUT R5
+
+    ; Wait for PB to be a 1
+@PB1  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB1
+
+; PB is a 1
+@PB0  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB0
+
+;1
+    SUB R3,R3;
+    LD R5, M[R0, 0x01];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+
+    ; Wait for PB to be a 1
+@PB11  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB11
+
+; PB is a 1
+@PB01  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB01
+
+;2
+    LD R5, M[R0, 0x2];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+
+    ; Wait for PB to be a 1
+@PB12  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB12
+
+; PB is a 1
+@PB02  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB02
+
+;3
+    LD R5, M[R0, 0x3];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+
+    ; Wait for PB to be a 1
+@PB13  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB13
+
+; PB is a 1
+@PB03  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB03
+
+;4
+    LD R5, M[R0, 0x4];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB14  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB14
+
+; PB is a 1
+@PB04  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB04
+
+;5
+    LD R5, M[R0, 0x5];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ADDC R1, 0x1;
+    ; Wait for PB to be a 1
+@PB15  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB15
+
+; PB is a 1
+@PB05  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB05
+
+;6
+    LD R5, M[R0, 0x6];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB16  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB16
+; PB is a 1
+@PB06  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB06
+
+;7
+    LD R5, M[R0, 0x7];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB17  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB17
+; PB is a 1
+@PB07  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB07
+
+
+;8
+    LD R5, M[R0, 0x8];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB18  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB18
+; PB is a 1
+@PB08  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB08
+
+;9
+    LD R5, M[R0, 0x9];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB19  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB19
+
+; PB is a 1
+@PB09  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB09
+
+;10
+    LD R5, M[R0, 0x0A];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB1A  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB1A
+; PB is a 1
+@PB0A  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB0A
+
+;11
+    LD R5, M[R0, 0x0B];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB1B  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB1B
+; PB is a 1
+@PB0B  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB0B
+
+
+;12
+    LD R5, M[R0, 0x0C];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB1C  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB1C
+; PB is a 1
+@PB0C  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB0C
+
+;13
+    LD R5, M[R0, 0x0D];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB1D  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB1D
+; PB is a 1
+@PB0D  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB0D
+
+;14
+    LD R5, M[R0, 0x0E];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB1E  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB1E
+; PB is a 1
+@PB0E  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB0E
+
+;15
+    LD R5, M[R0, 0x0F];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB1F  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB1F
+; PB is a 1
+@PB0F  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB0F
+
+;16
+    LD R5, M[R0, 0x10];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB110  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB110
+; PB is a 1
+@PB010  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB010
+
+
+;17
+    LD R5, M[R0, 0x11];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB111  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB111
+; PB is a 1
+@PB011  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB011
+
+
+;18
+    LD R5, M[R0, 0x12];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB112  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB112
+; PB is a 1
+@PB012  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB012
+
+;19
+    LD R5, M[R0, 0x13];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB113  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB113
+; PB is a 1
+@PB013  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB013
+
+;20
+    LD R5, M[R0, 0x14];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB114  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB114
+; PB is a 1
+@PB014  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB014
+
+;21
+    LD R5, M[R0, 0x15];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB115  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB115
+; PB is a 1
+@PB015  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB015
+
+;22
+    LD R5, M[R0, 0x16];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB116  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB116
+; PB is a 1
+@PB016  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB016
+
+;23
+    LD R5, M[R0, 0x17];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB117  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB117
+; PB is a 1
+@PB017  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB017
+
+;24
+    LD R5, M[R0, 0x18];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB118  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB118
+; PB is a 1
+@PB018  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB018
+
+;25
+    LD R5, M[R0, 0x19];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB119  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB119
+; PB is a 1
+@PB019  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB019
+
+;26
+    LD R5, M[R0, 0x1A];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB11A  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB11A
+; PB is a 1
+@PB01A  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB01A
+
+;27
+    LD R5, M[R0, 0x1B];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB11B  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB11B
+; PB is a 1
+@PB01B  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB01B
+
+;28
+    LD R5, M[R0, 0x1C];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB11C  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB11C
+; PB is a 1
+@PB01C  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB01C
+
+;29
+    LD R5, M[R0, 0x1D];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB11D  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB11D
+; PB is a 1
+@PB01D  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB01D
+
+;30
+    LD R5, M[R0, 0x1E];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB11E  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB11E
+; PB is a 1
+@PB01E  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB01E
+
+;31
+    LD R5, M[R0, 0x1F];          R5 = M[R1+0x20]
+    OUT R5;                         OUT R5
+    ; Wait for PB to be a 1
+@PB11F  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB11F
+; PB is a 1
+@PB01F  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB01F
+
+; enable all leds
+; unfortunately we cant load 0xff into a register
+; and we do not have a shift left
+; so we will do it this way
+    SUBC R1, R1;    
+    SUB R2, R2;
+    ADDC R1, 0x10; 0x10
+    OR R2, R1;
+    ADD R1, R1;    0x20
+    OR R2, R1;
+    ADD R1, R1;    0x40
+    OR R2, R1;
+    ADD R1, R1;    0x80
+    OR R2, R1;
+    SUB R1, R1;
+    ADDC R1, 0x0F;
+    OR R2, R1;
+@FOREVER OUT R2;
+    JMP U0 @FOREVER
+
+    .endcode;
