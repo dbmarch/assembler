@@ -15,11 +15,11 @@
 ; Load in the arrays 
     SUB R1, R1;                 R1 = 0   This will be index into array.
     SUB R7, R7;
-    ADDC R7, 0x2;               R7 is the ARRAY Counter.  ARRAY 1, ARRAY 2.
-@ARRAY  SUB R6, R6;             R6 = 0   This will track how many elements we read in.
-    ADDC R6, 0x10;              R6 = 16  This will load in 16 values  Array 1, Array 2.
+    ADDC R7, 0x2;
+@ARRAY  SUB R6, R6;                 R6 = 0   This will track how many elements we read in.
+    ADDC R6, 0x10;              R6 = 32   This will load in 32 values  Array 1, Array 2.
 ; Load in the arrays 
-    SUB R8, R8;                 R8 is the indicator light. 
+    SUB R8, R8;                 R8 is the indicator light.
     ADDC R8, 0x10;
 
     ; Wait for PB to be a 1
@@ -33,7 +33,7 @@
     JMP C1 @LOOP2;
 
 ; PB is a 0  - Save the array
-    ST  R5, M[R1, 0x0];             SAVE R5 in MEMORY at R1
+    ST  R5, M[R1, 0x0];
     OR  R5, R8;
     OUT R5;                         OUTPUT LEDS to show progress.
 
@@ -49,7 +49,7 @@
 
 ; Matrix 4x4 addition
         SUB		R1, R1;						Set R1=0    R1 is index into array
-        ADDC	R1, 0x10;					R1 = 15
+        ADDC	R1, 0x10;					R1 = 16
 @Loop3	LD		R3, M[R1, 0x0];				R3 = M[R1+0]
         LD		R2, M[R1, 0x10];			R2 = M[R1+16]
         ADD 	R3, R2;						R3 = R3+R2
@@ -101,12 +101,12 @@
 ;        SUBC    R5, 0x1;                    R5--
 ;        JMP		Z0, @Loop4;					Jump to Loop2 when Zero NOT set.
 
-; Signal we are done inputting by lighting all LEDs
+; Signal we are done inputting by outputting all LEDS
     SUB R5, R5;
     ADDC R5, 0x1F;
     OUT R5;
 
-; Output ARRAY 2 to the LEDs
+; Output ARRAY 1 to the LEDs (Result of addition)
     ; Wait for PB to be a 1
 @LOOP5  IN R5;      READ in R5
     RRC R5, 0x01;
@@ -120,7 +120,7 @@
     SUB R6, R6;                     R6 = 0
     ADDC R6, 0x10;                  R6 = 16
     SUB R1, R1;                     R1 = 0
-@LOOP7 LD R5, M[R1, 0x10];            R5 = M[R1+0x10]
+@LOOP7 LD R5, M[R1, 0x0];           R5 = M[R1+0]
     OUT R5;                         OUT R5
 
     ; Wait for PB to be a 1
@@ -135,7 +135,7 @@
 
     ADDC R1, 0x01;                  R1++
     SUBC R6, 0x01;                  R6--
-    JMP Z0, @LOOP7;                 If R6 != 0, JUMP to LOOP7
+    JMP Z0, @LOOP7
 
 ; ALL 16 output to LED
     .endcode;
