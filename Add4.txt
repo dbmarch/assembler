@@ -9,12 +9,12 @@
     .code;
 ; Load in the arrays
     SUB R1, R1;                     R1 = 0   This will be index into array.
+    SUB R8, R8;       R8 is the indicator light.
     SUB R7, R7;
     ADDC R7, 0x2;
 @ARRAY  SUB R6, R6;                 R6 = 0   This will track how many elements we read in.
     ADDC R6, 0x4;                R6 = 4   This will load in 16 values for each array
 ; Load in the arrays
-    SUB R8, R8;       R8 is the indicator light.
     ADDC R8, 0x10;
 
 ; Wait for PB to be a 1
