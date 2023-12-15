@@ -1,11 +1,18 @@
 ; 	Complete program
 ;   Read in 2 arrays of 16 elements  (array 1, array 2)
+;   As each is entered we display the 4 bits and bit 4 to indicate we are reading these values.
+;   When all input is entered, we display 5 leds on
 ;   Add arrays  array 1=array 1+ array 2
 ;   transpose arrays   array 2 = transpose (array 1)
+;   Due to not getting LD indirect memory working transpose is built into add.
 ;   output array 2
+;   after program done, we enable all leds and spin
 ;------------------------------------------------------------------------------
 ; ARRAY 1    0...15
 ; ARRAY 2    16..31
+; SUM        0...15
+; Transpose  32..47
+;
 ; Add the Arrays:    ARRAY1= ARRAY1+ARRAY2
 ; Transpose Array:   ARRAY2= Transpose(ARRAY1)
 ;------------------------------------------------------------------------------
