@@ -1,0 +1,403 @@
+; 	Complete program
+;   Read in 2 arrays of 16 elements  (array 1, array 2)
+;   As each is entered we display the 4 bits and bit 4 to indicate we are reading these values.
+;   When all input is entered, we display 5 leds on
+;   Add arrays  array 1=array 1+ array 2
+;   transpose arrays   array 2 = transpose (array 1)
+;   Due to not getting LD indirect memory working transpose is built into add.
+;   output array 2
+;   after program done, we enable all leds and spin
+;------------------------------------------------------------------------------
+; ARRAY 1    0...15
+; ARRAY 2    16..31
+; SUM        0...15
+; Transpose  32..47
+;
+; Add the Arrays:    ARRAY1= ARRAY1+ARRAY2
+; Transpose Array:   ARRAY2= Transpose(ARRAY1)
+;------------------------------------------------------------------------------
+;	Code segment:
+;------------------------------------------------------------------------------
+    .code;
+; Load in the arrays
+    SUB R1, R1;       R1 = 0   This will be index into array.
+    SUB R8, R8;       R8 is the indicator light.
+    SUB R7, R7;
+    ADDC R7, 0x2;     We are loading 2 ARRAYS
+@ARRAY  SUB R6, R6;   R6 = 0   This will track how many elements we read in.
+    ADDC R6, 0x10;    R6 = 16   This will load in 16 values for each array
+
+    ADDC R8, 0x10;    INDICATOR. SHOWS WHICH ARRAY WE ARE ON.
+
+; Wait for PB to be a 1
+@LOOP1  IN R5;                      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @LOOP1
+
+; PB is a 1.  Wait for it to be 0.
+@LOOP2  IN R5;                      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @LOOP2;
+
+; PB is a 0  -                      Save the array
+    ST R5, M[R1, 0x0];
+    OR R5, R8;
+    OUT R5;                         OUTPUT LEDS to show progress.
+
+    ADDC R1, 0x1;                   R1++
+    SUBC R6, 0x1;                   R6--   This is our 16 byte countdown
+    JMP Z0, @LOOP1;                 Go back and read more switches.
+
+    SUBC R7, 0x1;                   Now next array
+    JMP Z0, @ARRAY;                 Go back and read more switches.
+
+;  ALL 16 elements are read in.
+
+; Output ARRAY 1 to the LEDs (Result of addition)
+    ; Wait for PB to be a 1
+@ALLDATA  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @ALLDATA
+
+; PB is a 1
+@ALLDATA1  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @ALLDATA1
+
+; Signal we are done inputting by outputting all LEDS
+    SUB R5, R5;
+    ADDC R5, 0x1F;
+    OUT R5;
+
+@ALLDATA2  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @ALLDATA2
+
+; PB is a 1
+@ALLDATA3  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @ALLDATA3
+
+; Matrix addition with transpose
+; From 
+;	0	1	2	3	4	5	6	7	8	9	10	11	12	13	14	15
+;	R11	R12	R13	R14	R21	R22	R23	R24	R31	R32	R33	R34	R41	R42	R43	R44
+;
+;	R11	R21	R31	R41	R12	R22	R32	R42	R13	R23	R33	R43	R14	R24	R34	R44
+;	0	4	8	12	1	5	9	13	2	6	10	14	3	7	11	15
+
+    SUB R0, R0;
+
+;0
+    LD R3, M[R0, 0x0];
+    LD R2, M[R0, 0x10];
+    ADD R3, R2;
+    SWAP R10, R3;
+
+;1
+    LD R3, M[R0, 0x1];
+    LD R2, M[R0, 0x11];
+    ADD R3, R2;
+    SWAP R14, R3;
+
+;2
+    LD R3, M[R0, 0x2];
+    LD R2, M[R0, 0x12];
+    ADD R3, R2;
+    SWAP R18, R3;
+
+;3
+    LD R3, M[R0, 0x3];
+    LD R2, M[R0, 0x13];
+    ADD R3, R2;
+    SWAP R22, R3;
+
+;4
+    LD R3, M[R0, 0x4];
+    LD R2, M[R0, 0x14];
+    ADD R3, R2;
+    SWAP R11, R3;
+
+;5
+    LD R3, M[R0, 0x5];
+    LD R2, M[R0, 0x15];
+    ADD R3, R2;
+    SWAP R15, R3;
+
+;6
+    LD R3, M[R0, 0x6];
+    LD R2, M[R0, 0x16];
+    ADD R3, R2;
+    SWAP R19, R3;
+
+;7
+    LD R3, M[R0, 0x7];
+    LD R2, M[R0, 0x17];
+    ADD R3, R2;
+    SWAP R13, R3;
+
+;8
+    LD R3, M[R0, 0x8];
+    LD R2, M[R0, 0x18];
+    ADD R3, R2;
+    SWAP R12, R3;
+
+;9
+    LD R3, M[R0, 0x9];
+    LD R2, M[R0, 0x19];
+    ADD R3, R2;
+    SWAP R16, R3;
+
+;10
+    LD R3, M[R0, 0x0A];
+    LD R2, M[R0, 0x1A];
+    ADD R3, R2;
+    SWAP R20, R3;
+
+;11
+    LD R3, M[R0, 0x0B];
+    LD R2, M[R0, 0x1B];
+    ADD R3, R2;
+    SWAP R24, R3;
+
+;12
+    LD R3, M[R0, 0x0C];
+    LD R2, M[R0, 0x1C];
+    ADD R3, R2;
+    SWAP R13, R3;
+
+;13
+    LD R3, M[R0, 0x0D];
+    LD R2, M[R0, 0x1D];
+    ADD R3, R2;
+    SWAP R17, R3;
+
+;14
+    LD R3, M[R0, 0x0E];
+    LD R2, M[R0, 0x1E];
+    ADD R3, R2;
+    SWAP R21, R3;
+
+;15
+    LD R3, M[R0, 0x0F];
+    LD R2, M[R0, 0x1F];
+    ADD R3, R2;
+    SWAP R25, R3;
+
+; Signal we are done inputting by outputting all LEDS
+    SUB R5, R5;
+    ADDC R5, 0x1F;
+    OUT R5;
+
+
+; Output ARRAY 2 to the LEDs (Result of Transpose)
+;0
+    OUT R10;
+    ; Wait for PB to be a 1
+@PB1  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB1
+
+; PB is a 1
+@PB0  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB0
+
+;1
+    OUT R11;
+    ; Wait for PB to be a 1
+@PB11  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB11
+
+; PB is a 1
+@PB01  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB01
+
+;2
+    OUT R12;
+
+    ; Wait for PB to be a 1
+@PB12  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB12
+
+; PB is a 1
+@PB02  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB02
+
+;3
+    OUT R13;
+
+    ; Wait for PB to be a 1
+@PB13  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB13
+
+; PB is a 1
+@PB03  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB03
+
+;4
+    OUT R14;
+
+    ; Wait for PB to be a 1
+@PB14  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB14
+
+; PB is a 1
+@PB04  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB04
+
+;5
+    OUT R15;
+    ; Wait for PB to be a 1
+@PB15  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB15
+
+; PB is a 1
+@PB05  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB05
+
+;6
+    OUT R16;
+    ; Wait for PB to be a 1
+@PB16  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB16
+; PB is a 1
+@PB06  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB06
+
+;7
+    OUT R17;
+    ; Wait for PB to be a 1
+@PB17  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB17
+; PB is a 1
+@PB07  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB07
+
+;8
+    OUT R18;
+    ; Wait for PB to be a 1
+@PB18  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB18
+; PB is a 1
+@PB08  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB08
+
+;9
+    OUT R19;
+    ; Wait for PB to be a 1
+@PB19  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB19
+
+; PB is a 1
+@PB09  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB09
+
+;10
+    OUT R20;
+    ; Wait for PB to be a 1
+@PB1A  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB1A
+; PB is a 1
+@PB0A  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB0A
+
+;11
+    OUT R21;
+    ; Wait for PB to be a 1
+@PB1B  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB1B
+; PB is a 1
+@PB0B  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB0B
+
+;12
+    OUT R22;
+    ; Wait for PB to be a 1
+@PB1C  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB1C
+; PB is a 1
+@PB0C  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB0C
+
+;13
+    OUT R23;
+    ; Wait for PB to be a 1
+@PB1D  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB1D
+; PB is a 1
+@PB0D  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB0D
+
+;14
+    OUT R24;
+    ; Wait for PB to be a 1
+@PB1E  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB1E
+; PB is a 1
+@PB0E  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB0E
+
+;15
+;    LD R5, M[R0, 0x2F];          R5 = M[R1+0x20]
+;    OUT R5;                         OUT R5
+    OUT R25;
+    ; Wait for PB to be a 1
+@PB1F  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB1F
+; PB is a 1
+@PB0F  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB0F
+
+; enable all leds
+; unfortunately we cant load 0xff into a register
+; and we do not have a shift left
+; so we will do it this way
+    SUB R1, R1;
+    SUB R2, R2;
+    ADDC R1, 0xF;
+    OR R2, R1;
+    SUBC R1, R1;    
+    ADDC R1, 0x10;
+    OR R2, R1;
+    ADD R1, R1;    0x20
+    OR R2, R1;
+    ADD R1, R1;    0x40
+    OR R2, R1;
+    ADD R1, R1;    0x80
+    OR R2, R1;
+@FOREVER OUT R2;
+    JMP U0 @FOREVER
+
+; ALL 16 output to LED
+    .endcode;
