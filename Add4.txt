@@ -42,14 +42,16 @@
 ;  ALL 4 elements are read in.
 
 ; Matrix 4x4 addition
-        SUB		R1, R1;						Set R1=0    R1 is index into array
-        ADDC	R1, 0x4;					R1 = 4
-@Loop3	LD		R3, M[R1, 0x0];				R3 = M[R1+0]
-        LD		R2, M[R1, 0x4];			R2 = M[R1+4]
-        ADD 	R3, R2;						R3 = R3+R2
-        ST		R3, M[R1, 0x0];				M[R1+0] = R3
-        SUBC	R1, 0x1;					R1-=1
-        JMP		Z0, @Loop3;					Jump to Loop3 when Zero NOT set.
+        SUB R1, R1;         Set R1=0    R1 is index into array
+        SUB R4, R4;         Loop Counter
+        ADDC R4, 0x4;       R4 = 4
+@Loop3 LD R3, M[R1, 0x0];   R3 = M[R1+0]
+        LD R2, M[R1, 0x4];  R2 = M[R1+4]
+        ADD R3, R2;         R3 = R3+R2
+        ST R3, M[R1, 0x0];  M[R1+0] = R3
+        ADDC R1, 0x1;       R1++
+        SUBC R4, 0x1;       R4--
+        JMP Z0, @Loop3; Jump to Loop3 when Zero NOT set.
 
 
 ; Signal we are done inputting by outputting all LEDS
@@ -87,6 +89,24 @@
     ADDC R1, 0x01;                  R1++
     SUBC R6, 0x01;                  R6--
     JMP Z0, @LOOP7
+
+; Enable all leds
+    SUBC R1, R1;
+    SUBC R2, R2;
+    ADDC R1, 0xF;
+    OR R2, R1;
+    SUBC R1, R1;    
+    ADDC R1, 0x10;
+    OR R2, R1;
+    ADD R1, R1;    0x20
+    OR R2, R1;
+    ADD R1, R1;    0x40
+    OR R2, R1;
+    ADD R1, R1;    0x80
+    OR R2, R1;
+@FOREVER OUT R2;
+    JMP U0 @FOREVER
+
 
 ; ALL 16 output to LED
     .endcode;
