@@ -197,23 +197,23 @@
 @2PB1  IN R5;          WAIT FOR PB to be 1
     RRC R5, 0x01;
     JMP C0 @2PB1
-@2PB2  IN R5;          Read Switches when PB 0
+@2PB2  IN R5;         Read Switches when PB 0
     RRC R5, 0x01;
     JMP C1 @2PB2
-    ADD R10, R5;     ADD ELEMENT
+    ADD R10, R5;      ADD ELEMENT
     OR R5, R8;
-    OUT R5;                         OUTPUT LEDS to show progress.
+    OUT R5;           OUTPUT LEDS to show progress.
 
 ;ARR2 1
-@2PB3  IN R5;          WAIT FOR PB to be 1
+@2PB3  IN R5;         WAIT FOR PB to be 1
     RRC R5, 0x01;
     JMP C0 @2PB3
 @2PB4 IN R5;          Read Switches when PB 0
     RRC R5, 0x01;
     JMP C1 @2PB4
-    ADD R11, R5;     ADD ELEMENT
+    ADD R11, R5;      ADD ELEMENT
     OR R5, R8;
-    OUT R5;                         OUTPUT LEDS to show progress.
+    OUT R5;           OUTPUT LEDS to show progress.
 
 ;ARR2 2
 @2PB5  IN R5;         WAIT FOR PB to be 1
