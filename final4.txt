@@ -1,0 +1,614 @@
+; 	Complete program
+;   Read in 2 arrays of 16 elements  (array 1, array 2)
+;   As each is entered we display the 4 bits and bit 4 to indicate we are reading these values.
+;   When all input is entered, we display 5 leds on
+;   Memory is not working reliably.   This program uses registers exclusively.
+;   Read in 16 bytes and store in R10-R25
+;   Read in next 16 bytes and add to R10 to R25
+;   Output transpose of R10-R25
+;------------------------------------------------------------------------------
+;	Code segment:
+;------------------------------------------------------------------------------
+    .code;
+; Load in the arrays
+    SUB R8, R8;       R8 is the indicator light.
+    ADDC R8, 0x10;    INDICATOR. SHOWS WHICH ARRAY WE ARE ON.
+
+;ARR1 0
+@PB1  IN R5;          WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @PB1
+@PB2  IN R5;          Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @PB2
+    CPY R10, R5;     SAVE ELEMENT
+    OR R5, R8;
+    OUT R5;                         OUTPUT LEDS to show progress.
+
+;ARR1 1
+@PB3  IN R5;          WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @PB3
+@PB4  IN R5;          Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @PB4
+    CPY R11, R5;     SAVE ELEMENT
+    OR R5, R8;
+    OUT R5;                         OUTPUT LEDS to show progress.
+
+;ARR1 2
+@PB5  IN R5;          WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @PB5
+@PB6 IN R5;          Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @PB6
+    CPY R12, R5;     SAVE ELEMENT
+    OR R5, R8;
+    OUT R5;                         OUTPUT LEDS to show progress.
+
+;ARR1 3
+@PB7  IN R5;          WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @PB7
+@PB8  IN R5;          Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @PB8
+    CPY R13, R5;     SAVE ELEMENT
+    OR R5, R8;
+    OUT R5;                         OUTPUT LEDS to show progress.
+
+;ARR1 4
+@PB9 IN R5;          WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @PB9
+@PB10  IN R5;          Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @PB10
+    CPY R14, R5;     SAVE ELEMENT
+    OR R5, R8;
+    OUT R5;                         OUTPUT LEDS to show progress.
+
+;ARR1 5
+@PB11 IN R5;          WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @PB11
+@PB12  IN R5;          Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @PB12
+    CPY R15, R5;     SAVE ELEMENT
+    OR R5, R8;
+    OUT R5;                         OUTPUT LEDS to show progress.
+
+;ARR1 6
+@PB13 IN R5;          WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @PB13
+@PB14  IN R5;          Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @PB14
+    CPY R16, R5;     SAVE ELEMENT
+    OR R5, R8;
+    OUT R5;                         OUTPUT LEDS to show progress.
+
+;ARR1 7
+@PB15 IN R5;          WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @PB15
+@PB16  IN R5;          Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @PB16
+    CPY R17, R5;     SAVE ELEMENT
+    OR R5, R8;
+    OUT R5;                         OUTPUT LEDS to show progress.
+
+;ARR1 8
+@PB17 IN R5;          WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @PB17
+@PB18 IN R5;          Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @PB18
+    CPY R18, R5;     SAVE ELEMENT
+    OR R5, R8;
+    OUT R5;           OUTPUT LEDS to show progress.
+
+;ARR1 9
+@PB19 IN R5;          WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @PB19
+@PB20 IN R5;          Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @PB20
+    CPY R19, R5;     SAVE ELEMENT
+    OR R5, R8;
+    OUT R5;           OUTPUT LEDS to show progress.
+
+;ARR1 10
+@PB21 IN R5;          WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @PB21
+@PB22 IN R5;          Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @PB22
+    CPY R20, R5;     SAVE ELEMENT
+    OR R5, R8;
+    OUT R5;           OUTPUT LEDS to show progress.
+
+;ARR1 11
+@PB23 IN R5;          WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @PB23
+@PB24 IN R5;          Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @PB24
+    CPY R21, R5;     SAVE ELEMENT
+    OR R5, R8;
+    OUT R5;           OUTPUT LEDS to show progress.
+
+;ARR1 12
+@PB25 IN R5;          WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @PB25
+@PB26 IN R5;          Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @PB26
+    CPY R22, R5;     SAVE ELEMENT
+    OR R5, R8;
+    OUT R5;           OUTPUT LEDS to show progress.
+
+;ARR1 13
+@PB27 IN R5;          WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @PB27
+@PB28 IN R5;          Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @PB28
+    CPY R23, R5;     SAVE ELEMENT
+    OR R5, R8;
+    OUT R5;           OUTPUT LEDS to show progress.
+
+;ARR1 14
+@PB29 IN R5;          WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @PB29
+@PB30 IN R5;          Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @PB30
+    CPY R24, R5;     SAVE ELEMENT
+    OR R5, R8;
+    OUT R5;           OUTPUT LEDS to show progress.
+
+;ARR1 15
+@PB31 IN R5;          WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @PB31
+@PB32 IN R5;          Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @PB32
+    CPY R25, R5;     SAVE ELEMENT
+    OR R5, R8;
+    OUT R5;           OUTPUT LEDS to show progress.
+
+; Now read in 2nd array and add to the 1st array
+    ADDC R8, 0x10;    INDICATOR. SHOWS WHICH ARRAY WE ARE ON.
+
+;ARR2 0
+@2PB1  IN R5;          WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @2PB1
+@2PB2  IN R5;          Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @2PB2
+    ADD R10, R5;     ADD ELEMENT
+    OR R5, R8;
+    OUT R5;                         OUTPUT LEDS to show progress.
+
+;ARR2 1
+@2PB3  IN R5;          WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @2PB3
+@2PB4 IN R5;          Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @2PB4
+    ADD R11, R5;     ADD ELEMENT
+    OR R5, R8;
+    OUT R5;                         OUTPUT LEDS to show progress.
+
+;ARR2 2
+@2PB5  IN R5;         WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @2PB5
+@2PB6 IN R5;          Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @2PB6
+    ADD R12, R5;      ADD ELEMENT
+    OR R5, R8;
+    OUT R5;           OUTPUT LEDS to show progress.
+
+;ARR2 3
+@2PB7  IN R5;         WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @2PB7
+@2PB8  IN R5;         Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @2PB8
+    ADD R13, R5;      ADD ELEMENT
+    OR R5, R8;
+    OUT R5;           OUTPUT LEDS to show progress.
+
+;ARR2 4
+@2PB9 IN R5;          WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @2PB9
+@2PB10  IN R5;        Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @2PB10
+    ADD R14, R5;      SAVE ELEMENT
+    OR R5, R8;
+    OUT R5;           OUTPUT LEDS to show progress.
+
+;ARR2 5
+@2PB11 IN R5;         WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @2PB11
+@2PB12  IN R5;        Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @2PB12
+    ADD R15, R5;      ADD ELEMENT
+    OR R5, R8;
+    OUT R5;           OUTPUT LEDS to show progress.
+
+;ARR2 6
+@2PB13 IN R5;         WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @2PB13
+@2PB14  IN R5;        Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @2PB14
+    ADD R16, R5;      ADD ELEMENT
+    OR R5, R8;
+    OUT R5;           OUTPUT LEDS to show progress.
+
+;ARR2 7
+@2PB15 IN R5;         WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @2PB15
+@2PB16  IN R5;        Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @2PB16
+    ADD R17, R5;      ADD ELEMENT
+    OR R5, R8;
+    OUT R5;           OUTPUT LEDS to show progress.
+
+;ARR2 8
+@2PB17 IN R5;         WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @2PB17
+@2PB18 IN R5;         Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @2PB18
+    ADD R18, R5;      ADD ELEMENT
+    OR R5, R8;
+    OUT R5;           OUTPUT LEDS to show progress.
+
+;ARR2 9
+@2PB19 IN R5;         WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @2PB19
+@2PB20 IN R5;         Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @2PB20
+    ADD R19, R5;      ADD ELEMENT
+    OR R5, R8;
+    OUT R5;           OUTPUT LEDS to show progress.
+
+;ARR2 10
+@2PB21 IN R5;         WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @2PB21
+@2PB22 IN R5;         Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @2PB22
+    ADD R20, R5;      ADD ELEMENT
+    OR R5, R8;
+    OUT R5;           OUTPUT LEDS to show progress.
+
+;ARR2 11
+@2PB23 IN R5;         WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @2PB23
+@2PB24 IN R5;         Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @2PB24
+    ADD R21, R5;      ADD ELEMENT
+    OR R5, R8;
+    OUT R5;           OUTPUT LEDS to show progress.
+
+;ARR2 12
+@2PB25 IN R5;         WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @2PB25
+@2PB26 IN R5;         Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @2PB26
+    ADD R22, R5;      ADD ELEMENT
+    OR R5, R8;
+    OUT R5;           OUTPUT LEDS to show progress.
+
+;ARR2 13
+@2PB27 IN R5;         WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @2PB27
+@2PB28 IN R5;         Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @2PB28
+    ADD R23, R5;      ADD ELEMENT
+    OR R5, R8;
+    OUT R5;           OUTPUT LEDS to show progress.
+
+;ARR2 14
+@2PB29 IN R5;         WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @2PB29
+@2PB30 IN R5;         Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @2PB30
+    ADD R24, R5;      ADD ELEMENT
+    OR R5, R8;
+    OUT R5;           OUTPUT LEDS to show progress.
+
+;ARR2 15
+@2PB31 IN R5;         WAIT FOR PB to be 1
+    RRC R5, 0x01;
+    JMP C0 @2PB31
+@2PB32 IN R5;         Read Switches when PB 0
+    RRC R5, 0x01;
+    JMP C1 @2PB32
+    ADD R25, R5;      ADD ELEMENT
+    OR R5, R8;
+    OUT R5;           OUTPUT LEDS to show progress.
+
+;  ALL 16 elements are read in.
+
+; Wait for PB to be a 1
+@ALLDATA  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @ALLDATA
+
+; PB is a 1
+@ALLDATA1  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @ALLDATA1
+
+; Signal we are done inputting by outputting all LEDS
+    SUB R5, R5;
+    ADDC R5, 0x1F;
+    OUT R5;
+
+@ALLDATA2  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @ALLDATA2
+
+; PB is a 1
+@ALLDATA3  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @ALLDATA3
+
+; Matrix addition with transpose
+; From 
+;	11	12  13  14   21  22  23  24  31  32  33  34  41  42  43  44
+;	R10 R11 R12 R13 R14 R15 R16 R17 R18 R19 R20 R21 R22 R23 R24 R25
+; To
+;	11	21   31	41	12	22	32	42	13	23	33	43	14	24	34	44
+; R10 R14 R17 R22 R11 R15 R19 R23 R12 R16 R20 R24 R13 R17 R21 R25
+
+; Output TRANSPOSED register set
+;0
+    OUT R10;
+    ; Wait for PB to be a 1
+@PB1  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB1
+
+; PB is a 1
+@PB0  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB0
+
+;1
+    OUT R14;
+    ; Wait for PB to be a 1
+@PB11  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB11
+
+; PB is a 1
+@PB01  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB01
+
+;2
+    OUT R17;
+
+    ; Wait for PB to be a 1
+@PB12  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB12
+
+; PB is a 1
+@PB02  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB02
+
+;3
+    OUT R22;
+
+    ; Wait for PB to be a 1
+@PB13  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB13
+
+; PB is a 1
+@PB03  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB03
+
+;4
+    OUT R11;
+
+    ; Wait for PB to be a 1
+@PB14  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB14
+
+; PB is a 1
+@PB04  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB04
+
+;5
+    OUT R15;
+    ; Wait for PB to be a 1
+@PB15  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB15
+
+; PB is a 1
+@PB05  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB05
+
+;6
+    OUT R19;
+    ; Wait for PB to be a 1
+@PB16  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB16
+; PB is a 1
+@PB06  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB06
+
+;7
+    OUT R23;
+    ; Wait for PB to be a 1
+@PB17  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB17
+; PB is a 1
+@PB07  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB07
+
+;8
+    OUT R12;
+    ; Wait for PB to be a 1
+@PB18  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB18
+; PB is a 1
+@PB08  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB08
+
+;9
+    OUT R16;
+    ; Wait for PB to be a 1
+@PB19  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB19
+
+; PB is a 1
+@PB09  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB09
+
+;10
+    OUT R20;
+    ; Wait for PB to be a 1
+@PB1A  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB1A
+; PB is a 1
+@PB0A  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB0A
+
+;11
+    OUT R24;
+    ; Wait for PB to be a 1
+@PB1B  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB1B
+; PB is a 1
+@PB0B  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB0B
+
+;12
+    OUT R13;
+    ; Wait for PB to be a 1
+@PB1C  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB1C
+; PB is a 1
+@PB0C  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB0C
+
+;13
+    OUT R17;
+    ; Wait for PB to be a 1
+@PB1D  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB1D
+; PB is a 1
+@PB0D  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB0D
+
+;14
+    OUT R21;
+    ; Wait for PB to be a 1
+@PB1E  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB1E
+; PB is a 1
+@PB0E  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB0E
+
+;15
+    OUT R25;
+    ; Wait for PB to be a 1
+@PB1F  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C0 @PB1F
+; PB is a 1
+@PB0F  IN R5;      READ in R5
+    RRC R5, 0x01;
+    JMP C1 @PB0F
+
+; enable all leds
+; unfortunately we cant load 0xff into a register
+; and we do not have a shift left
+; so we will do it this way
+    SUB R1, R1;
+    SUB R2, R2;
+    ADDC R1, 0xF;
+    OR R2, R1;
+    SUBC R1, R1;    
+    ADDC R1, 0x10;
+    OR R2, R1;
+    ADD R1, R1;    0x20
+    OR R2, R1;
+    ADD R1, R1;    0x40
+    OR R2, R1;
+    ADD R1, R1;    0x80
+    OR R2, R1;
+@FOREVER OUT R2;
+    JMP U0 @FOREVER
+
+; ALL 16 output to LED
+    .endcode;
