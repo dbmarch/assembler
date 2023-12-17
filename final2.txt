@@ -198,12 +198,6 @@
     ST R3, M[R0, 0x0F];
     ST R3, M[R0, 0x2F]; Transpose to 0x2F
 
-; Signal we are done inputting by outputting all LEDS
-    SUB R5, R5;
-    ADDC R5, 0x1F;
-    OUT R5;
-
-
 ; Output ARRAY 2 to the LEDs (Result of Transpose)
 ;0
     SUB R0,R0;

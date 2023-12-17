@@ -430,7 +430,6 @@
 
 ;2
     OUT R18;
-
     ; Wait for PB to be a 1
 @OUTPB12  IN R5;      READ in R5
     RRC R5, 0x01;
@@ -443,7 +442,6 @@
 
 ;3
     OUT R22;
-
     ; Wait for PB to be a 1
 @OUTPB13  IN R5;      READ in R5
     RRC R5, 0x01;
