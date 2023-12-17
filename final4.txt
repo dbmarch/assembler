@@ -1,4 +1,4 @@
-; 	Complete program
+; Complete program
 ;   Read in 2 arrays of 16 elements  (array 1, array 2)
 ;   As each is entered we display the 4 bits and bit 4 to indicate we are reading these values.
 ;   When all input is entered, we display 5 leds on
@@ -7,7 +7,7 @@
 ;   Read in next 16 bytes and add to R10 to R25
 ;   Output transpose of R10-R25
 ;------------------------------------------------------------------------------
-;	Code segment:
+; Code segment:
 ;------------------------------------------------------------------------------
     .code;
 ; Load in the arrays
@@ -396,204 +396,210 @@
     JMP C1 @ALLDATA3
 
 ; Matrix addition with transpose
-; From 
-;	11	12  13  14   21  22  23  24  31  32  33  34  41  42  43  44
-;	R10 R11 R12 R13 R14 R15 R16 R17 R18 R19 R20 R21 R22 R23 R24 R25
+; From
+; 11  12  13  14  21  22  23  24  31  32  33  34  41  42  43  44
+; R10 R11 R12 R13 R14 R15 R16 R17 R18 R19 R20 R21 R22 R23 R24 R25
 ; To
-;	11	21   31	41	12	22	32	42	13	23	33	43	14	24	34	44
-; R10 R14 R17 R22 R11 R15 R19 R23 R12 R16 R20 R24 R13 R17 R21 R25
+; 11  21  31  41  12  22  32  42  13  23  33  43  14  24  34  44
+; R10 R14 R18 R22 R11 R15 R19 R23 R12 R16 R20 R24 R13 R17 R21 R25
 
 ; Output TRANSPOSED register set
 ;0
     OUT R10;
     ; Wait for PB to be a 1
-@PB1  IN R5;      READ in R5
+@OUTPB1  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C0 @PB1
+    JMP C0 @OUTPB1
 
 ; PB is a 1
-@PB0  IN R5;      READ in R5
+@OUTPB0  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C1 @PB0
+    JMP C1 @OUTPB0
 
 ;1
     OUT R14;
     ; Wait for PB to be a 1
-@PB11  IN R5;      READ in R5
+@OUTPB11  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C0 @PB11
+    JMP C0 @OUTPB11
 
 ; PB is a 1
-@PB01  IN R5;      READ in R5
+@OUTPB01  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C1 @PB01
+    JMP C1 @OUTPB01
 
 ;2
-    OUT R17;
+    OUT R18;
 
     ; Wait for PB to be a 1
-@PB12  IN R5;      READ in R5
+@OUTPB12  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C0 @PB12
+    JMP C0 @OUTPB12
 
 ; PB is a 1
-@PB02  IN R5;      READ in R5
+@OUTPB02  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C1 @PB02
+    JMP C1 @OUTPB02
 
 ;3
     OUT R22;
 
     ; Wait for PB to be a 1
-@PB13  IN R5;      READ in R5
+@OUTPB13  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C0 @PB13
+    JMP C0 @OUTPB13
 
 ; PB is a 1
-@PB03  IN R5;      READ in R5
+@OUTPB03  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C1 @PB03
+    JMP C1 @OUTPB03
 
 ;4
     OUT R11;
 
     ; Wait for PB to be a 1
-@PB14  IN R5;      READ in R5
+@OUTPB14  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C0 @PB14
+    JMP C0 @OUTPB14
 
 ; PB is a 1
-@PB04  IN R5;      READ in R5
+@OUTPB04  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C1 @PB04
+    JMP C1 @OUTPB04
 
 ;5
     OUT R15;
     ; Wait for PB to be a 1
-@PB15  IN R5;      READ in R5
+@OUTPB15  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C0 @PB15
+    JMP C0 @OUTPB15
 
 ; PB is a 1
-@PB05  IN R5;      READ in R5
+@OUTPB05  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C1 @PB05
+    JMP C1 @OUTPB05
 
 ;6
     OUT R19;
     ; Wait for PB to be a 1
-@PB16  IN R5;      READ in R5
+@OUTPB16  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C0 @PB16
+    JMP C0 @OUTPB16
+
 ; PB is a 1
-@PB06  IN R5;      READ in R5
+@OUTPB06  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C1 @PB06
+    JMP C1 @OUTPB06
 
 ;7
     OUT R23;
     ; Wait for PB to be a 1
-@PB17  IN R5;      READ in R5
+@OUTPB17  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C0 @PB17
+    JMP C0 @OUTPB17
+
 ; PB is a 1
-@PB07  IN R5;      READ in R5
+@OUTPB07  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C1 @PB07
+    JMP C1 @OUTPB07
 
 ;8
     OUT R12;
     ; Wait for PB to be a 1
-@PB18  IN R5;      READ in R5
+@OUTPB18  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C0 @PB18
+    JMP C0 @OUTPB18
+
 ; PB is a 1
-@PB08  IN R5;      READ in R5
+@OUTPB08  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C1 @PB08
+    JMP C1 @OUTPB08
 
 ;9
     OUT R16;
     ; Wait for PB to be a 1
-@PB19  IN R5;      READ in R5
+@OUTPB19  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C0 @PB19
+    JMP C0 @OUTPB19
 
 ; PB is a 1
-@PB09  IN R5;      READ in R5
+@OUTPB09  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C1 @PB09
+    JMP C1 @OUTPB09
 
 ;10
     OUT R20;
     ; Wait for PB to be a 1
-@PB1A  IN R5;      READ in R5
+@OUTPB1A  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C0 @PB1A
+    JMP C0 @OUTPB1A
+
 ; PB is a 1
-@PB0A  IN R5;      READ in R5
+@OUTPB0A  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C1 @PB0A
+    JMP C1 @OUTPB0A
 
 ;11
     OUT R24;
     ; Wait for PB to be a 1
-@PB1B  IN R5;      READ in R5
+@OUTPB1B  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C0 @PB1B
+    JMP C0 @OUTPB1B
+
 ; PB is a 1
-@PB0B  IN R5;      READ in R5
+@OUTPB0B  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C1 @PB0B
+    JMP C1 @OUTPB0B
 
 ;12
     OUT R13;
     ; Wait for PB to be a 1
-@PB1C  IN R5;      READ in R5
+@OUTPB1C  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C0 @PB1C
+    JMP C0 @OUTPB1C
+
 ; PB is a 1
-@PB0C  IN R5;      READ in R5
+@OUTPB0C  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C1 @PB0C
+    JMP C1 @OUTPB0C
 
 ;13
     OUT R17;
     ; Wait for PB to be a 1
-@PB1D  IN R5;      READ in R5
+@OUTPB1D  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C0 @PB1D
+    JMP C0 @OUTPB1D
+
 ; PB is a 1
-@PB0D  IN R5;      READ in R5
+@OUTPB0D  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C1 @PB0D
+    JMP C1 @OUTPB0D
 
 ;14
     OUT R21;
     ; Wait for PB to be a 1
-@PB1E  IN R5;      READ in R5
+@OUTPB1E  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C0 @PB1E
+    JMP C0 @OUTPB1E
+
 ; PB is a 1
-@PB0E  IN R5;      READ in R5
+@OUTPB0E  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C1 @PB0E
+    JMP C1 @OUTPB0E
 
 ;15
     OUT R25;
     ; Wait for PB to be a 1
-@PB1F  IN R5;      READ in R5
+@OUTPB1F  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C0 @PB1F
+    JMP C0 @OUTPB1F
+
 ; PB is a 1
-@PB0F  IN R5;      READ in R5
+@OUTPB0F  IN R5;      READ in R5
     RRC R5, 0x01;
-    JMP C1 @PB0F
+    JMP C1 @OUTPB0F
 
 ; enable all leds
-; unfortunately we cant load 0xff into a register
-; and we do not have a shift left
-; so we will do it this way
     SUB R1, R1;
     SUB R2, R2;
     ADDC R1, 0xF;
@@ -612,3 +618,4 @@
 
 ; ALL 16 output to LED
     .endcode;
+
